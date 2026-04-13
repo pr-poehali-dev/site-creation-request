@@ -246,7 +246,7 @@ function Hero({ onSearch }: { onSearch: () => void }) {
           cursor: "pointer", whiteSpace: "nowrap",
           boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
         }}>
-          66&nbsp;115&nbsp;квартир&nbsp;в&nbsp;461&nbsp;ЖК
+          {count.toLocaleString("ru-RU")}&nbsp;квартир&nbsp;в&nbsp;461&nbsp;ЖК
         </button>
       </div>
     </div>
