@@ -85,7 +85,7 @@ const SALE_STARTS: SaleStart[] = [
   {
     id: 4, name: "Большое Юрлово", isNew: true,
     startLabel: "Апрель 2026 — корпуса 5, 6",
-    metro: "Пятницкое шоссе", metroColor: "#009C6E", metroTime: "15 минут транспортом",
+    metro: "Пятницкое шоссе", metroColor: "#1E3A8A", metroTime: "15 минут транспортом",
     location: "ГО Химки, МО, деревня Юрлово, Пятницкое шоссе",
     developer: "ГК Самолет. Москва", deadline: "1 кв. 2028 – 3 кв. 2028",
     prices: [{ type: "Студии", price: "от 4 542 581 ₽" }, { type: "1-к.кв", price: "от 5 278 122 ₽" }, { type: "2Е-к.кв", price: "от 5 460 239 ₽" }],
@@ -112,20 +112,58 @@ const SALE_STARTS: SaleStart[] = [
     totalApts: 349, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/d3be9dcd-8e1b-46b6-8595-f67712a3e37c.png",
   },
+  {
+    id: 7, name: "Муза", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Аэропорт", metroColor: "#009C6E", metroTime: "10 минут пешком",
+    location: "Аэропорт, ул Красноармейская",
+    developer: "Мангазея", deadline: "2 кв. 2029",
+    prices: [{ type: "1-к.кв", price: "от 42 487 320 ₽" }, { type: "2-к.кв", price: "от 70 906 220 ₽" }, { type: "3-к.кв", price: "от 71 467 500 ₽" }],
+    totalApts: 20, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/6090d6e1-3f6a-49e3-93b9-7b1a6fb268c0.png",
+  },
+  {
+    id: 8, name: "Резиденция Омега", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Академическая (6л)", metroColor: "#FF8C00", metroTime: "20 минут пешком",
+    location: "Гагаринский, ул Фотиевой",
+    developer: "Aurix Development", deadline: "1 кв. 2030",
+    prices: [{ type: "2Е-к.кв", price: "от 134 531 569 ₽" }, { type: "3Е-к.кв", price: "от 165 803 459 ₽" }, { type: "4Е-к.кв", price: "от 208 598 153 ₽" }],
+    totalApts: 5, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/0f672596-714b-43f7-9d42-d594727be277.png",
+  },
+  {
+    id: 9, name: "Сердце Лыткарино", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Томилино (D3)", metroColor: "#FF8C00", metroTime: "15 минут транспортом",
+    location: "ГО Лыткарино, МО, г Лыткарино, ул Спортивная",
+    developer: "ООО Генезис", deadline: "2 кв. 2028",
+    prices: [{ type: "Студии", price: "от 5 622 301 ₽" }, { type: "1-к.кв", price: "от 7 270 616 ₽" }, { type: "2Е-к.кв", price: "от 8 023 517 ₽" }],
+    totalApts: 140, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/d4abd92f-d58d-4dc4-8f54-27cb64e83df3.png",
+  },
 ];
 
 // ─── Карточка старта продаж ───────────────────────────────────────────────────
 
 function SaleStartCard({ item }: { item: SaleStart }) {
+  const [hovered, setHovered] = useState(false);
   return (
-    <div style={{
-      background: "#fff", display: "flex", flexDirection: "column",
-      cursor: "pointer",
-    }}>
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: "#fff", display: "flex", flexDirection: "column",
+        cursor: "pointer", borderRadius: 12,
+        boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.13)" : "0 1px 4px rgba(0,0,0,0.06)",
+        transform: hovered ? "translateY(-4px)" : "translateY(0)",
+        transition: "box-shadow 0.22s, transform 0.22s",
+        overflow: "hidden",
+      }}>
       {/* Фото */}
       <div style={{ position: "relative", height: 200, overflow: "hidden", background: "#E5E9F0" }}>
         <img src={item.img} alt={item.name}
-          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transform: hovered ? "scale(1.04)" : "scale(1)", transition: "transform 0.35s" }} />
         {/* Бейджи сверху */}
         <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 6 }}>
           {item.isNew && (
