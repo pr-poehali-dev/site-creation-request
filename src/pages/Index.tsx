@@ -60,7 +60,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "AFI Development", deadline: "Сдан – 1 кв. 2028",
     prices: [{ type: "Студии", price: "Цена под запрос" }, { type: "1-к.кв", price: "Цена под запрос" }, { type: "2Е-к.кв", price: "Цена под запрос" }],
     totalApts: 458, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d36f78e1-8530-48a7-b6a0-9db6d00ca552.jpg",
+    img: "https://cdn.poehali.dev/files/3bbca03a-1d6c-48ec-972c-2c622e394360.png",
   },
   {
     id: 2, name: "СберСити", isNew: false,
@@ -70,7 +70,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "СберСити", deadline: "2 кв. 2026 – 4 кв. 2028",
     prices: [{ type: "Студии", price: "от 24 802 692 ₽" }, { type: "1-к.кв", price: "от 29 842 650 ₽" }, { type: "2Е-к.кв", price: "от 25 582 100 ₽" }],
     totalApts: 161, views: 1, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/19f07cf6-bf2b-46eb-982d-933340d0e051.jpg",
+    img: "https://cdn.poehali.dev/files/5e7dd13e-a840-4073-88dc-fbb32cab61c2.png",
   },
   {
     id: 3, name: "Пыжевский", isNew: true,
@@ -80,7 +80,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "Текта Групп", deadline: "2 кв. 2029",
     prices: [{ type: "2Е-к.кв", price: "от 238 943 151 ₽" }, { type: "3Е-к.кв", price: "от 426 475 566 ₽" }, { type: "4Е-к.кв", price: "от 458 957 772 ₽" }],
     totalApts: 24, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/e07795b5-0285-4bff-83f7-56684d4ea41c.jpg",
+    img: "https://cdn.poehali.dev/files/9fdfe580-3c4f-4a3a-849b-f73586a4dd9a.png",
   },
   {
     id: 4, name: "Большое Юрлово", isNew: true,
