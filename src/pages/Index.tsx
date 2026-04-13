@@ -245,7 +245,7 @@ function SaleStartCard({ item }: { item: SaleStart }) {
       </div>
 
       {/* Контент */}
-      <div style={{ padding: "14px 0 0", flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ padding: "14px 12px 12px", flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
         <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.05rem", color: "#111827" }}>{item.name}</div>
 
         {/* Метро */}
@@ -342,9 +342,9 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
         {/* Мобильный: горизонтальный скролл */}
         <div ref={scrollRef}
           className="sale-starts-mobile"
-          style={{ display: "none", overflowX: "auto", scrollSnapType: "x mandatory", scrollbarWidth: "none", gap: "1rem", padding: "0 1rem" }}>
+          style={{ display: "none", overflowX: "auto", scrollSnapType: "x mandatory", scrollbarWidth: "none", gap: "0.75rem", padding: "0 1rem 0.5rem" }}>
           {SALE_STARTS.map(item => (
-            <div key={item.id} style={{ scrollSnapAlign: "start", flexShrink: 0, width: "80vw", maxWidth: 300 }}>
+            <div key={item.id} style={{ scrollSnapAlign: "start", flexShrink: 0, width: "78vw", maxWidth: 320 }}>
               <SaleStartCard item={item} />
             </div>
           ))}
