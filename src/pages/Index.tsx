@@ -360,7 +360,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
           </div>
         </div>
 
-        {/* Мобильный: вертикальный список + кнопка раскрытия */}
+        {/* Мобильный: вертикальный список + кнопки раскрытия/свёртки */}
         <div className="sale-starts-mobile" style={{ display: "none", flexDirection: "column", gap: "0.75rem", padding: "0 1rem" }}>
           {mobVisible.map(item => (
             <SaleStartCard key={item.id} item={item} />
@@ -374,6 +374,17 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
             }}>
               <Icon name="ChevronDown" size={14} />
               Показать ещё {SALE_STARTS.length - 3}
+            </button>
+          )}
+          {mobExpanded && (
+            <button onClick={() => setMobExpanded(false)} style={{
+              background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
+              padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+              fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            }}>
+              <Icon name="ChevronUp" size={14} />
+              Свернуть
             </button>
           )}
         </div>
@@ -646,6 +657,14 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
             </span>
           </button>
         )}
+        {!showAll && expanded && (
+          <button onClick={() => { setExpanded(false); setMobExpanded(false); }}
+            style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#374151", fontWeight: 500 }}
+          >
+            <Icon name="ChevronUp" size={14} />
+            Свернуть
+          </button>
+        )}
       </div>
 
       {/* Десктоп: сетка */}
@@ -667,6 +686,17 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
             Показать ещё {LAUNCHES.length - 3}
           </button>
         )}
+        {!showAll && mobExpanded && (
+          <button onClick={() => setMobExpanded(false)} style={{
+            background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
+            padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+            fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}>
+            <Icon name="ChevronUp" size={14} />
+            Свернуть
+          </button>
+        )}
       </div>
       </div>
     </div>
@@ -678,9 +708,10 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
 function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void }) {
   const [mob, setMob] = useState(false);
   const links = [
-    { id: "home",       label: "Главная"          },
-    { id: "launches",   label: "Анонсы стартов"   },
-    { id: "contact",    label: "Контакты"          },
+    { id: "home",         label: "Главная"          },
+    { id: "launches",     label: "Анонсы стартов"   },
+    { id: "sale-starts",  label: "Старты продаж"    },
+    { id: "contact",      label: "Контакты"          },
   ];
   const go = (id: string) => { setPage(id); setMob(false); window.scrollTo({ top: 0 }); };
 
