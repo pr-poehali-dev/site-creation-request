@@ -172,6 +172,36 @@ const SALE_STARTS: SaleStart[] = [
     totalApts: 116, tags: ["Новостройки", "Апартаменты"],
     img: "https://cdn.poehali.dev/files/5cd0de12-0ff2-4d1e-8afe-3b490e178dab.png",
   },
+  {
+    id: 13, name: "1-й Химкинский", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Химки (D3)", metroColor: "#FF8C00", metroTime: "15 минут транспортом",
+    location: "ГО Химки, МО, г Химки, кв-л Ивакино",
+    developer: "ДСК-1", deadline: "4 кв. 2026 – 4 кв. 2028",
+    prices: [{ type: "Студии", price: "от 4 845 380 ₽" }, { type: "1-к.кв", price: "от 7 019 694 ₽" }, { type: "2Е-к.кв", price: "от 7 781 220 ₽" }],
+    totalApts: 499, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/dda84f56-873a-4b83-ae02-8ee1f5715ee0.png",
+  },
+  {
+    id: 14, name: "Прибрежный Парк", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Домодедовская", metroColor: "#009C6E", metroTime: "25 минут транспортом",
+    location: "ГО Домодедово, МО, ул Новая",
+    developer: "ГК Самолет. Москва", deadline: "2 кв. 2026 – 4 кв. 2028",
+    prices: [{ type: "Студии", price: "от 5 244 320 ₽" }, { type: "1-к.кв", price: "от 7 195 929 ₽" }, { type: "2Е-к.кв", price: "от 6 615 965 ₽" }],
+    totalApts: 206, views: 52, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/08ef7a6a-a14f-4c96-ad0b-a122b373b4b0.png",
+  },
+  {
+    id: 15, name: "Ольховый квартал", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Коммунарка", metroColor: "#009C6E", metroTime: "20 минут пешком",
+    location: "Новая Москва, поселение Сосенское, ул Николо-Хованская",
+    developer: "ГК Самолет. Москва", deadline: "2 кв. 2026 – 4 кв. 2028",
+    prices: [{ type: "Студии", price: "от 6 294 543 ₽" }, { type: "1-к.кв", price: "от 10 954 153 ₽" }, { type: "2Е-к.кв", price: "от 12 029 144 ₽" }],
+    totalApts: 123, views: 18, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/cafcd858-3c57-4a75-8c5e-3361f92fdec9.png",
+  },
 ];
 
 // ─── Карточка старта продаж ───────────────────────────────────────────────────
