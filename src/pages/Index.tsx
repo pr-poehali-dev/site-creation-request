@@ -595,7 +595,8 @@ function Hero({ onSearch }: { onSearch: () => void }) {
 // ─── Секция анонсов ───────────────────────────────────────────────────────────
 
 function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) => void; showAll?: boolean }) {
-  const visible = showAll ? LAUNCHES : LAUNCHES.slice(0, 6);
+  const [expanded, setExpanded] = useState(false);
+  const visible = (showAll || expanded) ? LAUNCHES : LAUNCHES.slice(0, 6);
 
   return (
     <div style={{ background: "#fff" }}>
@@ -605,9 +606,9 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
           Анонсы стартов продаж
         </h2>
-        {!showAll && (
+        {!showAll && !expanded && (
           <button
-            onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
+            onClick={() => setExpanded(true)}
             style={{
               display: "flex", alignItems: "center", gap: 8,
               background: "none", border: "none", cursor: "pointer",
