@@ -208,41 +208,42 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
   const visible = SALE_STARTS.slice(page * perPage, page * perPage + perPage);
 
   return (
-    <div style={{ background: "#fff", padding: "2rem 0", borderTop: "1px solid #E8EBF0" }}>
-      {/* Заголовок */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", padding: "0 clamp(1rem,5vw,4rem)" }}>
-        <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
-          Старты продаж
-        </h2>
-        <button onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
-          style={{ background: "#fff", border: "1px solid #D1D5DB", borderRadius: 100, padding: "0.4rem 1.1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", fontWeight: 500, color: "#374151", cursor: "pointer" }}>
-          Все старты продаж
-        </button>
-      </div>
-
-      {/* Обёртка слайдера */}
-      <div style={{ position: "relative" }}>
-        {/* Кнопка влево */}
-        {page > 0 && (
-          <button onClick={() => setSliderPage(p => p - 1)}
-            style={{ position: "absolute", left: -16, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
+    <div style={{ background: "#fff", borderTop: "1px solid #E8EBF0" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem clamp(1rem,5vw,4rem)" }}>
+        {/* Заголовок */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
+          <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
+            Старты продаж
+          </h2>
+          <button onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
+            style={{ background: "#fff", border: "1px solid #D1D5DB", borderRadius: 100, padding: "0.4rem 1.1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", fontWeight: 500, color: "#374151", cursor: "pointer" }}>
+            Все старты продаж
           </button>
-        )}
-
-        {/* Сетка 3 карточки */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", padding: "0 clamp(1rem,5vw,4rem)" }}
-          className="sale-starts-grid">
-          {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
         </div>
 
-        {/* Кнопка вправо */}
-        {page < totalPages - 1 && (
-          <button onClick={() => setSliderPage(p => p + 1)}
-            style={{ position: "absolute", right: -16, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
-          </button>
-        )}
+        {/* Обёртка слайдера */}
+        <div style={{ position: "relative" }}>
+          {/* Кнопка влево */}
+          {page > 0 && (
+            <button onClick={() => setSliderPage(p => p - 1)}
+              style={{ position: "absolute", left: -20, top: "40%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
+            </button>
+          )}
+
+          {/* Сетка 3 карточки */}
+          <div className="sale-starts-grid">
+            {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
+          </div>
+
+          {/* Кнопка вправо */}
+          {page < totalPages - 1 && (
+            <button onClick={() => setSliderPage(p => p + 1)}
+              style={{ position: "absolute", right: -20, top: "40%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -492,7 +493,8 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
   const visible = showAll ? LAUNCHES : LAUNCHES.slice(0, 6);
 
   return (
-    <div style={{ background: "#fff", padding: "2rem clamp(1rem,5vw,4rem)" }}>
+    <div style={{ background: "#fff" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem clamp(1rem,5vw,4rem)" }}>
       {/* Заголовок */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
@@ -523,6 +525,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
       {/* Сетка карточек */}
       <div className="launches-grid">
         {visible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
+      </div>
       </div>
     </div>
   );
@@ -616,7 +619,8 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
       <SaleStartsSection setPage={setPage} />
 
       {/* Преимущества */}
-      <div style={{ background: "#F5F7FB", padding: "2.5rem clamp(1rem,5vw,4rem)", borderTop: "1px solid #E8EBF0" }}>
+      <div style={{ background: "#F5F7FB", borderTop: "1px solid #E8EBF0" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2.5rem clamp(1rem,5vw,4rem)" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", marginBottom: "1.5rem", color: "#111827" }}>Почему выбирают нас</h2>
         <div className="features-grid">
           {[
@@ -636,6 +640,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
             </div>
           ))}
         </div>
+      </div>
       </div>
 
       {/* CTA */}
