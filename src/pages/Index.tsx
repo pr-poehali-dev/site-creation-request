@@ -118,17 +118,17 @@ function Hero({ onSearch }: { onSearch: () => void }) {
   ];
 
   return (
-    <div style={{ background: "#ECF0F7", padding: "4rem clamp(1rem,5vw,4rem) 3.5rem", textAlign: "center" }}>
+    <div style={{ background: "#ECF0F7", padding: "3rem clamp(1rem,4vw,4rem) 3rem", textAlign: "center" }}>
       <h1 style={{
         fontFamily: "Inter, sans-serif", fontWeight: 700,
-        fontSize: "clamp(2.2rem,4.5vw,3.2rem)", color: "#111827",
-        lineHeight: 1.2, marginBottom: "2.5rem", letterSpacing: "-0.01em",
+        fontSize: "clamp(1.8rem,4.5vw,3.2rem)", color: "#111827",
+        lineHeight: 1.2, marginBottom: "2rem", letterSpacing: "-0.01em",
       }}>
         Более&nbsp;66&nbsp;000&nbsp;квартир<br />в&nbsp;Москве
       </h1>
 
-      {/* Табы — одинаковые пиллы */}
-      <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
+      {/* Табы */}
+      <div className="hero-tabs" style={{ marginBottom: "1.25rem" }}>
         {tabs.map(t => (
           <button
             key={t.label}
@@ -137,32 +137,36 @@ function Hero({ onSearch }: { onSearch: () => void }) {
               background: "#fff",
               border: `1px solid ${activeTab === t.label ? "#B0BCCE" : "#D1D8E4"}`,
               borderRadius: 100,
-              padding: "0.5rem 1.1rem",
-              fontFamily: "Inter, sans-serif", fontSize: "0.84rem", fontWeight: 500,
-              color: "#374151",
-              cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 7,
-              transition: "border-color 0.15s",
+              padding: "0.45rem 0.9rem",
+              fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500,
+              color: "#374151", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 6,
               boxShadow: activeTab === t.label ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
             }}
           >
-            <Icon name={t.icon as "Building2"} size={14} style={{ color: "#6B7280" }} />
+            <Icon name={t.icon as "Building2"} size={13} style={{ color: "#6B7280" }} />
             {t.label}
           </button>
         ))}
       </div>
 
       {/* Поисковая строка */}
-      <div style={{
-        background: "#fff",
-        borderRadius: 12,
-        border: "1px solid #D1D8E4",
-        maxWidth: 860, margin: "0 auto",
-        display: "flex", alignItems: "center",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-      }}>
+      <div
+        className="hero-searchbar"
+        style={{
+          background: "#fff",
+          borderRadius: 12,
+          border: "1px solid #D1D8E4",
+          maxWidth: 860, margin: "0 auto",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+          overflow: "hidden",
+        }}
+      >
         {/* Search input */}
-        <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "0 1rem" }}>
+        <div
+          className="hero-searchbar-input"
+          style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "0 1rem" }}
+        >
           <Icon name="Search" size={15} style={{ color: "#9CA3AF", flexShrink: 0 }} />
           <input
             value={search}
@@ -178,14 +182,14 @@ function Hero({ onSearch }: { onSearch: () => void }) {
           />
         </div>
 
-        {/* Фильтры как текст с разделителями */}
-        <div style={{ display: "flex", alignItems: "center", borderLeft: "1px solid #E5E9F0", flexShrink: 0 }}>
-          {["Тип квартиры", "Цена от-до, ₽", "Срок сдачи"].map((f, i) => (
+        {/* Фильтры — скрываются на мобильном */}
+        <div className="hero-filters">
+          {["Тип квартиры", "Цена от-до, ₽", "Срок сдачи"].map((f) => (
             <button key={f} style={{
               background: "none", border: "none",
               borderRight: "1px solid #E5E9F0",
-              padding: "0 1.1rem", height: 52,
-              fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+              padding: "0 1rem", height: 52,
+              fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
               color: "#374151", fontWeight: 500,
               cursor: "pointer", whiteSpace: "nowrap",
             }}>
@@ -194,8 +198,8 @@ function Hero({ onSearch }: { onSearch: () => void }) {
           ))}
           <button style={{
             background: "none", border: "none",
-            padding: "0 1.1rem", height: 52,
-            fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+            padding: "0 1rem", height: 52,
+            fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
             color: "#374151", fontWeight: 500,
             cursor: "pointer", whiteSpace: "nowrap",
             display: "flex", alignItems: "center", gap: 6,
@@ -206,8 +210,8 @@ function Hero({ onSearch }: { onSearch: () => void }) {
         </div>
       </div>
 
-      {/* Нижний ряд кнопок */}
-      <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: "0.75rem", maxWidth: 860, margin: "1.1rem auto 0" }}>
+      {/* Кнопки действий */}
+      <div className="hero-actions" style={{ maxWidth: 860, margin: "1rem auto 0" }}>
         <button style={{
           display: "flex", alignItems: "center", gap: 7,
           background: "none", border: "none",
@@ -267,11 +271,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
       </div>
 
       {/* Сетка карточек */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "0.75rem",
-      }}>
+      <div className="launches-grid">
         {visible.map(item => <LaunchCard key={item.id} item={item} />)}
       </div>
     </div>
@@ -308,7 +308,7 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
           </span>
         </button>
 
-        <div style={{ display: "flex", gap: "0.15rem", flex: 1 }}>
+        <div className="nav-links">
           {links.map(l => (
             <button key={l.id} onClick={() => go(l.id)} style={{
               background: page === l.id ? "#EFF6FF" : "none",
@@ -323,7 +323,7 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
           ))}
         </div>
 
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "1rem", flexShrink: 0 }}>
+        <div className="nav-right" style={{ marginLeft: "auto" }}>
           <a href="tel:+74951234567" style={{ display: "flex", alignItems: "center", gap: 5, textDecoration: "none", color: "#111827", fontWeight: 600, fontSize: "0.88rem", fontFamily: "Inter, sans-serif" }}>
             <Icon name="Phone" size={14} style={{ color: "#2563EB" }} />
             +7 (495) 123-45-67
@@ -333,8 +333,8 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
           </button>
         </div>
 
-        <button onClick={() => setMob(!mob)} className="md:hidden" style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>
-          <Icon name={mob ? "X" : "Menu"} size={20} style={{ color: "#374151" }} />
+        <button className="nav-burger" onClick={() => setMob(!mob)} style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>
+          <Icon name={mob ? "X" : "Menu"} size={22} style={{ color: "#374151" }} />
         </button>
       </nav>
 
@@ -366,7 +366,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
       {/* Преимущества */}
       <div style={{ background: "#F5F7FB", padding: "2.5rem clamp(1rem,5vw,4rem)", borderTop: "1px solid #E8EBF0" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", marginBottom: "1.5rem", color: "#111827" }}>Почему выбирают нас</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))", gap: "1rem" }}>
+        <div className="features-grid">
           {[
             { icon: "ShieldCheck", t: "Проверенные объекты", d: "Только аккредитованные ЖК" },
             { icon: "Banknote",    t: "Бесплатно для вас",   d: "Никаких комиссий с покупателей" },
@@ -413,8 +413,8 @@ function CatalogPage() {
   const inp = { border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.6rem 0.85rem", fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "#374151", outline: "none", width: "100%", background: "#fff" };
 
   return (
-    <div style={{ display: "flex", minHeight: "calc(100vh - 56px)", background: "#F5F7FB" }}>
-      <aside style={{ width: showFilters ? 260 : 0, overflow: "hidden", background: "#fff", borderRight: "1px solid #E8EBF0", transition: "width 0.25s", flexShrink: 0 }}>
+    <div className="catalog-layout" style={{ minHeight: "calc(100vh - 56px)", background: "#F5F7FB" }}>
+      <aside className="catalog-aside" style={{ width: showFilters ? 260 : 0, overflow: "hidden", background: "#fff", borderRight: "1px solid #E8EBF0", transition: "width 0.25s", flexShrink: 0 }}>
         <div style={{ width: 260, padding: "1.5rem 1.25rem", display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.9rem" }}>Фильтры</span>
@@ -532,7 +532,7 @@ function ContactPage() {
     <div style={{ padding: "2.5rem clamp(1rem,5vw,4rem)", background: "#F5F7FB", minHeight: "100vh" }}>
       <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.5rem", marginBottom: "0.35rem", color: "#111827" }}>Контакты</h1>
       <p style={{ color: "#6B7280", fontSize: "0.875rem", marginBottom: "2.5rem" }}>Ответим в течение 30 минут</p>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem", alignItems: "start" }}>
+      <div className="contact-grid">
         <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E8EBF0", padding: "1.75rem" }}>
           <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1rem", marginBottom: "1.25rem" }}>Оставить заявку</h2>
           {sent ? (

@@ -263,4 +263,126 @@
     border-radius: var(--radius);
     z-index: 2;
   }
+
+  /* ── Мобильная адаптация ─────────────────────────────── */
+
+  /* Навбар: скрываем ссылки и телефон на мобильном */
+  .nav-links {
+    display: flex;
+    gap: 0.15rem;
+    flex: 1;
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
+  .nav-burger {
+    display: none;
+  }
+
+  /* Hero */
+  .hero-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .hero-searchbar {
+    display: flex;
+    align-items: center;
+  }
+  .hero-filters {
+    display: flex;
+    align-items: center;
+    border-left: 1px solid #e5e9f0;
+    flex-shrink: 0;
+  }
+  .hero-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  /* Сетки */
+  .launches-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  .catalog-layout {
+    display: flex;
+    min-height: calc(100vh - 56px);
+  }
+
+  @media (max-width: 768px) {
+    /* Навбар */
+    .nav-links {
+      display: none;
+    }
+    .nav-right {
+      display: none;
+    }
+    .nav-burger {
+      display: flex;
+    }
+
+    /* Hero */
+    .hero-tabs {
+      gap: 0.4rem;
+    }
+    .hero-filters {
+      display: none;
+    }
+    .hero-searchbar {
+      flex-direction: column;
+      align-items: stretch;
+      border-radius: 12px;
+    }
+    .hero-searchbar-input {
+      border-bottom: 1px solid #e5e9f0;
+    }
+    .hero-actions {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Сетки → 1 колонка */
+    .launches-grid {
+      grid-template-columns: 1fr;
+    }
+    .features-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+
+    /* Каталог: фильтры скрыты, контент full-width */
+    .catalog-aside {
+      display: none !important;
+    }
+    .catalog-layout {
+      flex-direction: column;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 }
