@@ -302,10 +302,16 @@ function SaleStartCard({ item }: { item: SaleStart }) {
 function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
   const [sliderPage, setSliderPage] = useState(0);
   const [mobExpanded, setMobExpanded] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const perPage = 3;
   const totalPages = Math.ceil(SALE_STARTS.length / perPage);
   const visible = SALE_STARTS.slice(sliderPage * perPage, sliderPage * perPage + perPage);
   const mobVisible = mobExpanded ? SALE_STARTS : SALE_STARTS.slice(0, 3);
+
+  const collapseMob = () => {
+    setMobExpanded(false);
+    setTimeout(() => sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 10);
+  };
 
   const btnStyle: React.CSSProperties = {
     position: "absolute", top: "40%", transform: "translateY(-50%)", zIndex: 10,
@@ -316,7 +322,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
   };
 
   return (
-    <div style={{ background: "#fff", borderTop: "1px solid #E8EBF0" }}>
+    <div ref={sectionRef} style={{ background: "#fff", borderTop: "1px solid #E8EBF0" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 0" }}>
         {/* Заголовок */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", padding: "0 clamp(1rem,5vw,4rem)" }}>
@@ -377,7 +383,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
             </button>
           )}
           {mobExpanded && (
-            <button onClick={() => setMobExpanded(false)} style={{
+            <button onClick={collapseMob} style={{
               background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
               padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
               fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
@@ -636,11 +642,18 @@ function Hero({ onSearch }: { onSearch: () => void }) {
 function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) => void; showAll?: boolean }) {
   const [expanded, setExpanded] = useState(false);
   const [mobExpanded, setMobExpanded] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
   const visible = (showAll || expanded) ? LAUNCHES : LAUNCHES.slice(0, 6);
   const mobVisible = (showAll || mobExpanded) ? LAUNCHES : LAUNCHES.slice(0, 3);
 
+  const collapse = () => {
+    setExpanded(false);
+    setMobExpanded(false);
+    setTimeout(() => sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 10);
+  };
+
   return (
-    <div style={{ background: "#fff" }}>
+    <div ref={sectionRef} style={{ background: "#fff" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem clamp(1rem,5vw,4rem)" }}>
       {/* Заголовок */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem" }}>
@@ -658,7 +671,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
           </button>
         )}
         {!showAll && expanded && (
-          <button onClick={() => { setExpanded(false); setMobExpanded(false); }}
+          <button onClick={collapse}
             style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#374151", fontWeight: 500 }}
           >
             <Icon name="ChevronUp" size={14} />
@@ -687,7 +700,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
           </button>
         )}
         {!showAll && mobExpanded && (
-          <button onClick={() => setMobExpanded(false)} style={{
+          <button onClick={collapse} style={{
             background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
             padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
             fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
