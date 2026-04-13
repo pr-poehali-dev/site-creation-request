@@ -624,7 +624,9 @@ function Hero({ onSearch }: { onSearch: () => void }) {
 
 function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) => void; showAll?: boolean }) {
   const [expanded, setExpanded] = useState(false);
+  const [mobExpanded, setMobExpanded] = useState(false);
   const visible = (showAll || expanded) ? LAUNCHES : LAUNCHES.slice(0, 6);
+  const mobVisible = (showAll || mobExpanded) ? LAUNCHES : LAUNCHES.slice(0, 3);
 
   return (
     <div style={{ background: "#fff" }}>
@@ -635,30 +637,36 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
           Анонсы стартов продаж
         </h2>
         {!showAll && !expanded && (
-          <button
-            onClick={() => setExpanded(true)}
-            style={{
-              display: "flex", alignItems: "center", gap: 8,
-              background: "none", border: "none", cursor: "pointer",
-              fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
-              color: "#374151", fontWeight: 500,
-            }}
+          <button onClick={() => { setExpanded(true); setMobExpanded(true); }}
+            style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#374151", fontWeight: 500 }}
           >
             Показать все
-            <span style={{
-              background: "#1F2937", color: "#fff",
-              borderRadius: 100, padding: "0.1rem 0.55rem",
-              fontSize: "0.72rem", fontWeight: 700,
-            }}>
+            <span style={{ background: "#1F2937", color: "#fff", borderRadius: 100, padding: "0.1rem 0.55rem", fontSize: "0.72rem", fontWeight: 700 }}>
               {LAUNCHES.length}
             </span>
           </button>
         )}
       </div>
 
-      {/* Сетка карточек */}
-      <div className="launches-grid">
+      {/* Десктоп: сетка */}
+      <div className="launches-grid launches-desktop">
         {visible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
+      </div>
+
+      {/* Мобильный: список */}
+      <div className="launches-mobile" style={{ display: "none", flexDirection: "column", gap: "0.75rem" }}>
+        {mobVisible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
+        {!showAll && !mobExpanded && LAUNCHES.length > 3 && (
+          <button onClick={() => setMobExpanded(true)} style={{
+            background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
+            padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+            fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}>
+            <Icon name="ChevronDown" size={14} />
+            Показать ещё {LAUNCHES.length - 3}
+          </button>
+        )}
       </div>
       </div>
     </div>

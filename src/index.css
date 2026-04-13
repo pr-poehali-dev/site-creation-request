@@ -375,6 +375,12 @@
     .launches-grid {
       grid-template-columns: 1fr;
     }
+    .launches-desktop {
+      display: none !important;
+    }
+    .launches-mobile {
+      display: flex !important;
+    }
 
     /* Старты продаж: на мобильном — горизонтальный скролл */
     .sale-starts-desktop {
