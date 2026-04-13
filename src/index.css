@@ -306,6 +306,15 @@
     gap: 0.75rem;
   }
 
+  /* Слайдер стартов продаж */
+  .sale-starts-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .sale-starts-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
   /* Сетки */
   .launches-grid {
     display: grid;

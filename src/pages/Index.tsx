@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
 // ─── Данные 12 объектов ───────────────────────────────────────────────────────
@@ -28,6 +28,229 @@ const LAUNCHES: Launch[] = [
   { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                        address: "г. Химки, ул Рабочая",                 deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/11.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b1395206-2a22-484f-9626-c1afe019ace9.jpg" },
   { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",    address: "пос. Светлые Горы, Пятницкое шоссе",  deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/12.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/84741645-38d5-4d64-91d8-2d42516b863b.jpg" },
 ];
+
+// ─── Данные Старты продаж ─────────────────────────────────────────────────────
+
+interface SaleStart {
+  id: number;
+  name: string;
+  isNew?: boolean;
+  isExclusive?: boolean;
+  startLabel: string;
+  metro: string;
+  metroColor: string;
+  metroTime: string;
+  location: string;
+  developer: string;
+  deadline: string;
+  prices: { type: string; price: string }[];
+  totalApts: number;
+  views?: number;
+  tags: string[];
+  img: string;
+  url?: string;
+}
+
+const SALE_STARTS: SaleStart[] = [
+  {
+    id: 1, name: "Одинбург", isNew: false,
+    startLabel: "Апрель 2026 — корпус Архитектурный проект",
+    metro: "Одинцово (D1)", metroColor: "#FF6B35", metroTime: "10 минут транспортом",
+    location: "ГО Одинцовский, МО, г. Одинцово, ул. Северная",
+    developer: "AFI Development", deadline: "Сдан – 1 кв. 2028",
+    prices: [{ type: "Студии", price: "Цена под запрос" }, { type: "1-к.кв", price: "Цена под запрос" }, { type: "2Е-к.кв", price: "Цена под запрос" }],
+    totalApts: 458, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/e55ce62a-a81a-470b-a459-e6ae911c4385.png",
+  },
+  {
+    id: 2, name: "СберСити", isNew: false,
+    startLabel: "Апрель 2026 — корпуса В16.5 Оптимум, В16.7 Баланс",
+    metro: "Кунцевская (4л)", metroColor: "#009C6E", metroTime: "20 минут транспортом",
+    location: "Кунцево, мкр. Рублево-Архангельское",
+    developer: "СберСити", deadline: "2 кв. 2026 – 4 кв. 2028",
+    prices: [{ type: "Студии", price: "от 24 802 692 ₽" }, { type: "1-к.кв", price: "от 29 842 650 ₽" }, { type: "2Е-к.кв", price: "от 25 582 100 ₽" }],
+    totalApts: 161, views: 1, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/40073580-c447-4f12-9d99-c2998ce8619b.png",
+  },
+  {
+    id: 3, name: "Пыжевский", isNew: true,
+    startLabel: "Апрель 2026 — корпуса 1, 2, 3, 4",
+    metro: "Третьяковская (6л)", metroColor: "#FF6B35", metroTime: "5 минут пешком",
+    location: "Якиманка, Пыжевский пер",
+    developer: "Текта Групп", deadline: "2 кв. 2029",
+    prices: [{ type: "2Е-к.кв", price: "от 238 943 151 ₽" }, { type: "3Е-к.кв", price: "от 426 475 566 ₽" }, { type: "4Е-к.кв", price: "от 458 957 772 ₽" }],
+    totalApts: 24, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f70845ae-46f5-4d59-82ee-03bfbf1f553e.png",
+  },
+  {
+    id: 4, name: "Большое Юрлово", isNew: true,
+    startLabel: "Апрель 2026 — корпуса 5, 6",
+    metro: "Пятницкое шоссе", metroColor: "#009C6E", metroTime: "15 минут транспортом",
+    location: "ГО Химки, МО, деревня Юрлово, Пятницкое шоссе",
+    developer: "ГК Самолет. Москва", deadline: "1 кв. 2028 – 3 кв. 2028",
+    prices: [{ type: "Студии", price: "от 4 542 581 ₽" }, { type: "1-к.кв", price: "от 5 278 122 ₽" }, { type: "2Е-к.кв", price: "от 5 460 239 ₽" }],
+    totalApts: 417, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/c9605b30-7066-4a14-b7e7-386d34078cfc.png",
+  },
+  {
+    id: 5, name: "Мартемьяново Клаб", isNew: false,
+    startLabel: "Апрель 2026 — корпус 1",
+    metro: "Апрелевка (D4)", metroColor: "#009C6E", metroTime: "15 минут транспортом",
+    location: "ГО Наро-Фоминский, МО, деревня Мартемьяново",
+    developer: "ГК ФСК. Москва", deadline: "2 кв. 2026 – 4 кв. 2027",
+    prices: [{ type: "1-к.кв", price: "от 7 625 453 ₽" }, { type: "2Е-к.кв", price: "от 12 669 665 ₽" }, { type: "2-к.кв", price: "от 12 794 333 ₽" }],
+    totalApts: 53, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56599fbd-6c7c-47c7-87b3-91b0e0c6f24d.png",
+  },
+  {
+    id: 6, name: "МЫС", isNew: false,
+    startLabel: "Апрель 2026 — корпуса Дом Алтай, Дом Урал",
+    metro: "Лесной Городок (D4)", metroColor: "#009C6E", metroTime: "10 минут транспортом",
+    location: "ГО Одинцовский, МО, деревня Ликино",
+    developer: "MR Group", deadline: "3 кв. 2028 – 2 кв. 2029",
+    prices: [{ type: "Студии", price: "от 12 885 847 ₽" }, { type: "2Е-к.кв", price: "от 12 732 815 ₽" }, { type: "2-к.кв", price: "от 19 149 747 ₽" }],
+    totalApts: 349, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/e55ce62a-a81a-470b-a459-e6ae911c4385.png",
+  },
+];
+
+// ─── Карточка старта продаж ───────────────────────────────────────────────────
+
+function SaleStartCard({ item }: { item: SaleStart }) {
+  return (
+    <div style={{
+      width: 310, flexShrink: 0, background: "#fff",
+      borderRadius: 0, display: "flex", flexDirection: "column",
+      cursor: "pointer",
+    }}>
+      {/* Фото */}
+      <div style={{ position: "relative", height: 200, overflow: "hidden", background: "#E5E9F0" }}>
+        <img src={item.img} alt={item.name}
+          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+        {/* Бейджи сверху */}
+        <div style={{ position: "absolute", top: 10, left: 10, display: "flex", gap: 6 }}>
+          {item.isNew && (
+            <span style={{ background: "#EF4444", color: "#fff", fontSize: "0.72rem", fontWeight: 700, padding: "3px 8px", borderRadius: 100, fontFamily: "Inter, sans-serif" }}>
+              Новый ЖК
+            </span>
+          )}
+          {item.isExclusive && (
+            <span style={{ background: "#3B82F6", color: "#fff", fontSize: "0.72rem", fontWeight: 700, padding: "3px 8px", borderRadius: 100, fontFamily: "Inter, sans-serif" }}>
+              Эксклюзивно на ТА
+            </span>
+          )}
+        </div>
+        {/* Старт продаж снизу */}
+        <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, background: "rgba(0,0,0,0.55)", padding: "6px 10px" }}>
+          <div style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 600, fontFamily: "Inter, sans-serif", opacity: 0.85 }}>Старт продаж</div>
+          <div style={{ color: "#fff", fontSize: "0.72rem", fontFamily: "Inter, sans-serif", lineHeight: 1.3 }}>{item.startLabel}</div>
+        </div>
+      </div>
+
+      {/* Контент */}
+      <div style={{ padding: "14px 0 0", flex: 1, display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.05rem", color: "#111827" }}>{item.name}</div>
+
+        {/* Метро */}
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ width: 9, height: 9, borderRadius: "50%", background: item.metroColor, flexShrink: 0, display: "inline-block" }} />
+          <span style={{ fontSize: "0.78rem", color: "#374151", fontFamily: "Inter, sans-serif" }}>{item.metro}, {item.metroTime}</span>
+        </div>
+
+        {/* Адрес */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 5 }}>
+          <Icon name="MapPin" size={13} style={{ color: "#9CA3AF", marginTop: 1, flexShrink: 0 }} />
+          <span style={{ fontSize: "0.78rem", color: "#6B7280", fontFamily: "Inter, sans-serif", lineHeight: 1.4 }}>{item.location}</span>
+        </div>
+
+        {/* Застройщик */}
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <Icon name="Building2" size={13} style={{ color: "#9CA3AF", flexShrink: 0 }} />
+          <span style={{ fontSize: "0.78rem", color: "#6B7280", fontFamily: "Inter, sans-serif" }}>Застройщик: {item.developer}</span>
+        </div>
+
+        {/* Срок */}
+        <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#111827", marginTop: 4 }}>{item.deadline}</div>
+
+        {/* Цены */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 2 }}>
+          {item.prices.map(p => (
+            <div key={p.type} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+              <span style={{ fontSize: "0.75rem", color: "#9CA3AF", fontFamily: "Inter, sans-serif" }}>{p.type}</span>
+              <span style={{
+                flex: 1, borderBottom: "1px dotted #D1D5DB",
+                margin: "0 6px", marginBottom: 2, display: "inline-block",
+              }} />
+              <span style={{ fontSize: "0.78rem", color: "#374151", fontFamily: "Inter, sans-serif", fontWeight: 500 }}>{p.price}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Квартир + теги */}
+        <div style={{ marginTop: 6, fontSize: "0.75rem", color: "#6B7280", fontFamily: "Inter, sans-serif" }}>
+          Квартир {item.totalApts}{item.views ? ` · Видовых ${item.views}` : ""}
+        </div>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 4, paddingBottom: 2 }}>
+          {item.tags.map(t => (
+            <span key={t} style={{ border: "1px solid #D1D5DB", borderRadius: 6, padding: "2px 10px", fontSize: "0.73rem", color: "#374151", fontFamily: "Inter, sans-serif" }}>{t}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Секция Старты продаж (слайдер) ──────────────────────────────────────────
+
+function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (dir: "left" | "right") => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollBy({ left: dir === "right" ? 340 : -340, behavior: "smooth" });
+  };
+
+  return (
+    <div style={{ background: "#fff", padding: "2rem 0", borderTop: "1px solid #E8EBF0" }}>
+      {/* Заголовок */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.25rem", padding: "0 clamp(1rem,5vw,4rem)" }}>
+        <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
+          Старты продаж
+        </h2>
+        <button onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
+          style={{ background: "#fff", border: "1px solid #D1D5DB", borderRadius: 100, padding: "0.4rem 1.1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", fontWeight: 500, color: "#374151", cursor: "pointer" }}>
+          Все старты продаж
+        </button>
+      </div>
+
+      {/* Обёртка слайдера */}
+      <div style={{ position: "relative" }}>
+        {/* Кнопка влево */}
+        <button onClick={() => scroll("left")}
+          style={{ position: "absolute", left: 8, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
+        </button>
+
+        {/* Список карточек */}
+        <div ref={scrollRef} style={{ display: "flex", gap: 0, overflowX: "auto", scrollbarWidth: "none", padding: "0 clamp(1rem,5vw,4rem)", scrollSnapType: "x mandatory" }}
+          className="sale-starts-scroll">
+          {SALE_STARTS.map((item, idx) => (
+            <div key={item.id} style={{ scrollSnapAlign: "start", padding: idx < SALE_STARTS.length - 1 ? "0 24px 0 0" : "0" }}>
+              <SaleStartCard item={item} />
+            </div>
+          ))}
+        </div>
+
+        {/* Кнопка вправо */}
+        <button onClick={() => scroll("right")}
+          style={{ position: "absolute", right: 8, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 const DISTRICTS = ["Вся Москва", "ЦАО", "СВАО", "ВАО", "ЮВАО", "ЮАО", "ЮЗАО", "ЗАО", "СЗАО", "САО", "Новая Москва", "Подмосковье"];
 const DEADLINES = ["Любой срок", "2025", "2026", "2027", "2028+"];
@@ -393,6 +616,8 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
       <div style={{ borderTop: "1px solid #E8EBF0" }}>
         <LaunchesSection setPage={setPage} showAll={false} />
       </div>
+
+      <SaleStartsSection setPage={setPage} />
 
       {/* Преимущества */}
       <div style={{ background: "#F5F7FB", padding: "2.5rem clamp(1rem,5vw,4rem)", borderTop: "1px solid #E8EBF0" }}>
