@@ -642,9 +642,7 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
   const [mob, setMob] = useState(false);
   const links = [
     { id: "home",       label: "Главная"          },
-    { id: "catalog",    label: "Новостройки"       },
     { id: "launches",   label: "Анонсы стартов"   },
-    { id: "developers", label: "Застройщики"       },
     { id: "contact",    label: "Контакты"          },
   ];
   const go = (id: string) => { setPage(id); setMob(false); window.scrollTo({ top: 0 }); };
@@ -932,36 +930,12 @@ function ContactPage() {
               <button type="submit" style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0.65rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer", width: "100%" }}>
                 Отправить заявку
               </button>
-              <p style={{ color: "#9CA3AF", fontSize: "0.72rem", textAlign: "center" }}>Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</p>
+
             </form>
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E8EBF0", padding: "1.5rem" }}>
-            <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1rem", marginBottom: "1rem" }}>Контактная информация</h2>
-            {[
-              { icon: "Phone", l: "Телефон",      v: "+7 (495) 123-45-67"     },
-              { icon: "Mail",  l: "Email",         v: "info@novostroiki-msk.ru"},
-              { icon: "Clock", l: "Режим работы",  v: "Пн–Вс: 9:00–21:00"    },
-            ].map(c => (
-              <div key={c.l} style={{ display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "0.875rem" }}>
-                <div style={{ width: 32, height: 32, background: "#EFF6FF", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                  <Icon name={c.icon as "Phone"} size={14} style={{ color: "#2563EB" }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: "0.68rem", color: "#9CA3AF", fontWeight: 500 }}>{c.l}</div>
-                  <div style={{ fontSize: "0.875rem", fontWeight: 500, color: "#111827" }}>{c.v}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ padding: "1.25rem", background: "#DCFCE7", borderRadius: 12, border: "1px solid #BBF7D0", display: "flex", gap: "0.75rem" }}>
-            <Icon name="ShieldCheck" size={18} style={{ color: "#16A34A", flexShrink: 0, marginTop: 1 }} />
-            <div>
-              <div style={{ fontWeight: 600, fontSize: "0.875rem", color: "#166534" }}>Консультация бесплатна</div>
-              <div style={{ fontSize: "0.78rem", color: "#166534", lineHeight: 1.5, marginTop: "0.15rem" }}>Никаких комиссий с покупателей.</div>
-            </div>
-          </div>
+  
         </div>
       </div>
     </div>
@@ -1210,12 +1184,10 @@ function Footer({ setPage }: { setPage: (p: string) => void }) {
               Новостройки<span style={{ color: "#60A5FA" }}>МСК</span>
             </span>
           </div>
-          <p style={{ fontSize: "0.78rem", lineHeight: 1.6, maxWidth: 220 }}>Агрегатор новостроек Москвы и Подмосковья</p>
         </div>
         <div style={{ display: "flex", gap: "3rem", flexWrap: "wrap" }}>
           {[
-            { title: "Сервис", links: [["home","Главная"],["catalog","Новостройки"],["launches","Анонсы стартов"],["developers","Застройщики"]] },
-            { title: "Помощь", links: [["contact","Контакты"],["contact","Для застройщиков"]] },
+            { title: "Сервис", links: [["home","Главная"],["launches","Анонсы стартов"],["contact","Контакты"]] },
           ].map(col => (
             <div key={col.title}>
               <div style={{ fontWeight: 600, color: "#F9FAFB", fontSize: "0.8rem", marginBottom: "0.6rem" }}>{col.title}</div>
