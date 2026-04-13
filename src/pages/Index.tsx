@@ -119,8 +119,7 @@ const SALE_STARTS: SaleStart[] = [
 function SaleStartCard({ item }: { item: SaleStart }) {
   return (
     <div style={{
-      width: 310, flexShrink: 0, background: "#fff",
-      borderRadius: 0, display: "flex", flexDirection: "column",
+      background: "#fff", display: "flex", flexDirection: "column",
       cursor: "pointer",
     }}>
       {/* Фото */}
@@ -200,16 +199,13 @@ function SaleStartCard({ item }: { item: SaleStart }) {
   );
 }
 
-// ─── Секция Старты продаж (слайдер) ──────────────────────────────────────────
+// ─── Секция Старты продаж (слайдер по 3) ─────────────────────────────────────
 
 function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (dir: "left" | "right") => {
-    const el = scrollRef.current;
-    if (!el) return;
-    el.scrollBy({ left: dir === "right" ? 340 : -340, behavior: "smooth" });
-  };
+  const [page, setSliderPage] = useState(0);
+  const perPage = 3;
+  const totalPages = Math.ceil(SALE_STARTS.length / perPage);
+  const visible = SALE_STARTS.slice(page * perPage, page * perPage + perPage);
 
   return (
     <div style={{ background: "#fff", padding: "2rem 0", borderTop: "1px solid #E8EBF0" }}>
@@ -227,26 +223,26 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
       {/* Обёртка слайдера */}
       <div style={{ position: "relative" }}>
         {/* Кнопка влево */}
-        <button onClick={() => scroll("left")}
-          style={{ position: "absolute", left: 8, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
-        </button>
+        {page > 0 && (
+          <button onClick={() => setSliderPage(p => p - 1)}
+            style={{ position: "absolute", left: -16, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
+          </button>
+        )}
 
-        {/* Список карточек */}
-        <div ref={scrollRef} style={{ display: "flex", gap: 0, overflowX: "auto", scrollbarWidth: "none", padding: "0 clamp(1rem,5vw,4rem)", scrollSnapType: "x mandatory" }}
-          className="sale-starts-scroll">
-          {SALE_STARTS.map((item, idx) => (
-            <div key={item.id} style={{ scrollSnapAlign: "start", padding: idx < SALE_STARTS.length - 1 ? "0 24px 0 0" : "0" }}>
-              <SaleStartCard item={item} />
-            </div>
-          ))}
+        {/* Сетка 3 карточки */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", padding: "0 clamp(1rem,5vw,4rem)" }}
+          className="sale-starts-grid">
+          {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
         </div>
 
         {/* Кнопка вправо */}
-        <button onClick={() => scroll("right")}
-          style={{ position: "absolute", right: 8, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
-        </button>
+        {page < totalPages - 1 && (
+          <button onClick={() => setSliderPage(p => p + 1)}
+            style={{ position: "absolute", right: -16, top: "38%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
+          </button>
+        )}
       </div>
     </div>
   );

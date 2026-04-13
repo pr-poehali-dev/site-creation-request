@@ -314,6 +314,9 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .sale-starts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 
   /* Сетки */
   .launches-grid {
@@ -371,6 +374,9 @@
 
     /* Сетки → 1 колонка */
     .launches-grid {
+      grid-template-columns: 1fr;
+    }
+    .sale-starts-grid {
       grid-template-columns: 1fr;
     }
     .features-grid {
