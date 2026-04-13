@@ -301,12 +301,18 @@ function SaleStartCard({ item }: { item: SaleStart }) {
 
 function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
   const [sliderPage, setSliderPage] = useState(0);
+  const [fading, setFading] = useState(false);
   const [mobExpanded, setMobExpanded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const perPage = 3;
   const totalPages = Math.ceil(SALE_STARTS.length / perPage);
   const visible = SALE_STARTS.slice(sliderPage * perPage, sliderPage * perPage + perPage);
   const mobVisible = mobExpanded ? SALE_STARTS : SALE_STARTS.slice(0, 3);
+
+  const goTo = (next: number) => {
+    setFading(true);
+    setTimeout(() => { setSliderPage(next); setFading(false); }, 220);
+  };
 
   const collapseMob = () => {
     setMobExpanded(false);
@@ -338,25 +344,25 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
         {/* Десктоп: 3 колонки + кнопки листания */}
         <div style={{ position: "relative", padding: "0 clamp(1rem,5vw,4rem)" }} className="sale-starts-desktop">
           {sliderPage > 0 && (
-            <button onClick={() => setSliderPage(p => p - 1)} style={{ ...btnStyle, left: 0 }}>
+            <button onClick={() => goTo(sliderPage - 1)} style={{ ...btnStyle, left: 0 }}>
               <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
             </button>
           )}
           <div style={{
             display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem",
-            transition: "opacity 0.25s",
+            opacity: fading ? 0 : 1, transition: "opacity 0.22s ease",
           }}>
             {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
           </div>
           {sliderPage < totalPages - 1 && (
-            <button onClick={() => setSliderPage(p => p + 1)} style={{ ...btnStyle, right: 0 }}>
+            <button onClick={() => goTo(sliderPage + 1)} style={{ ...btnStyle, right: 0 }}>
               <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
             </button>
           )}
           {/* Точки-индикаторы */}
           <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1.25rem" }}>
             {Array.from({ length: totalPages }).map((_, i) => (
-              <button key={i} onClick={() => setSliderPage(i)} style={{
+              <button key={i} onClick={() => goTo(i)} style={{
                 width: i === sliderPage ? 20 : 8, height: 8,
                 borderRadius: 100, border: "none", cursor: "pointer",
                 background: i === sliderPage ? "#2563EB" : "#D1D5DB",
