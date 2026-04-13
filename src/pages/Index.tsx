@@ -577,15 +577,15 @@ function Hero({ onSearch }: { onSearch: () => void }) {
           <Icon name="MapPin" size={15} style={{ color: "#2563EB" }} />
           На карте
         </button>
-        <button onClick={onSearch} style={{
+        <button style={{
           background: "#2563EB", color: "#fff",
           border: "none", borderRadius: 100,
           padding: "0.65rem 1.4rem",
           fontFamily: "Inter, sans-serif", fontSize: "0.84rem", fontWeight: 600,
-          cursor: "pointer", whiteSpace: "nowrap",
+          cursor: "default", whiteSpace: "nowrap",
           boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
         }}>
-          Найти квартиру
+          {count.toLocaleString("ru-RU")}&nbsp;квартир&nbsp;в&nbsp;461&nbsp;ЖК
         </button>
       </div>
     </div>
