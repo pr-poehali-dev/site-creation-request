@@ -55,12 +55,10 @@ function ProjectAvatar({ id, img, size = 48 }: { id: number; img?: string; size?
   );
 }
 
-// ─── Карточка анонса — стиль trendagent ──────────────────────────────────────
+// ─── Компактная карточка анонса ───────────────────────────────────────────────
 
 function LaunchCard({ item, setPage }: { item: Launch; setPage?: (p: string) => void }) {
-  const [hovered, setHovered] = useState(false);
-  const title = item.developer ? item.developer : item.name;
-  const subtitle = item.developer ? item.name : "";
+  const title = item.developer ? `${item.developer} - ${item.name}` : item.name;
 
   const handleClick = () => {
     if (item.internalPage && setPage) {
@@ -74,108 +72,46 @@ function LaunchCard({ item, setPage }: { item: Launch; setPage?: (p: string) => 
   return (
     <div
       onClick={handleClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
       style={{
-        borderRadius: 16,
-        overflow: "hidden",
+        background: "#fff",
+        borderRadius: 12,
+        border: "1px solid #E2E6EE",
+        padding: "16px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 8,
+        transition: "box-shadow 0.18s",
         cursor: "pointer",
-        position: "relative",
-        aspectRatio: "4/3",
-        background: "#1a1a2e",
-        boxShadow: hovered ? "0 12px 40px rgba(0,0,0,0.22)" : "0 2px 12px rgba(0,0,0,0.1)",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        transition: "box-shadow 0.25s ease, transform 0.25s ease",
       }}
+      onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "none"; }}
     >
-      {/* Фото */}
-      {item.img && (
-        <img
-          src={item.img}
-          alt={item.name}
-          style={{
-            position: "absolute", inset: 0,
-            width: "100%", height: "100%",
-            objectFit: "cover",
-            transform: hovered ? "scale(1.04)" : "scale(1)",
-            transition: "transform 0.45s ease",
-          }}
-        />
-      )}
-
-      {/* Тёмный градиент снизу */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.08) 100%)",
-      }} />
-
-      {/* Тег срок сдачи — верх справа */}
-      <div style={{
-        position: "absolute", top: 14, right: 14,
-        background: "rgba(255,255,255,0.15)",
-        backdropFilter: "blur(8px)",
-        WebkitBackdropFilter: "blur(8px)",
-        border: "1px solid rgba(255,255,255,0.25)",
-        borderRadius: 100,
-        padding: "4px 12px",
-        fontFamily: "Inter, sans-serif", fontSize: "0.72rem", fontWeight: 500,
-        color: "#fff", letterSpacing: "0.02em",
-        display: "flex", alignItems: "center", gap: 5,
-      }}>
-        <Icon name="Calendar" size={11} style={{ color: "rgba(255,255,255,0.8)" }} />
-        {item.deadline}
+      {/* Avatar + title */}
+      <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+        <ProjectAvatar id={item.id} img={item.img} size={48} />
+        <span style={{
+          fontFamily: "Inter, sans-serif", fontWeight: 600,
+          fontSize: "0.88rem", color: "#111827", lineHeight: 1.35,
+          overflow: "hidden", display: "-webkit-box",
+          WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+        }}>
+          {title}
+        </span>
       </div>
 
-      {/* Контент снизу */}
-      <div style={{
-        position: "absolute", bottom: 0, left: 0, right: 0,
-        padding: "1.2rem",
-      }}>
-        {/* Застройщик */}
-        {item.developer && (
-          <div style={{
-            fontFamily: "Inter, sans-serif", fontSize: "0.7rem", fontWeight: 500,
-            color: "rgba(255,255,255,0.65)", letterSpacing: "0.06em",
-            textTransform: "uppercase", marginBottom: 4,
-          }}>
-            {title}
-          </div>
-        )}
+      {/* Address */}
+      <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+        <Icon name="MapPin" size={12} style={{ color: "#9CA3AF", flexShrink: 0 }} />
+        <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>{item.address}</span>
+      </div>
 
-        {/* Название ЖК */}
-        <div style={{
-          fontFamily: "Inter, sans-serif", fontWeight: 700,
-          fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "#fff",
-          lineHeight: 1.25, marginBottom: 6,
-        }}>
-          {subtitle || title}
+      {/* Date + link */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+          <Icon name="Calendar" size={12} style={{ color: "#9CA3AF" }} />
+          <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>{item.deadline}</span>
         </div>
-
-        {/* Адрес + кнопка */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
-            <Icon name="MapPin" size={11} style={{ color: "rgba(255,255,255,0.6)", flexShrink: 0 }} />
-            <span style={{
-              fontSize: "0.75rem", color: "rgba(255,255,255,0.7)",
-              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-            }}>
-              {item.address}
-            </span>
-          </div>
-          <div style={{
-            flexShrink: 0,
-            background: "#fff",
-            color: "#111827",
-            borderRadius: 100,
-            padding: "5px 14px",
-            fontFamily: "Inter, sans-serif", fontSize: "0.72rem", fontWeight: 600,
-            display: "flex", alignItems: "center", gap: 5,
-            whiteSpace: "nowrap",
-          }}>
-            Подробнее
-            <Icon name="ArrowUpRight" size={11} />
-          </div>
-        </div>
+        <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#2563EB" }}>Подробнее</span>
       </div>
     </div>
   );
