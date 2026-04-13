@@ -307,15 +307,14 @@
   }
 
   /* Слайдер стартов продаж */
-  .sale-starts-scroll::-webkit-scrollbar {
+  .sale-starts-mobile {
+    display: none !important;
+  }
+  .sale-starts-desktop {
+    display: block;
+  }
+  .sale-starts-mobile::-webkit-scrollbar {
     display: none;
-  }
-  .sale-starts-scroll {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .sale-starts-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 
   /* Сетки */
@@ -376,8 +375,13 @@
     .launches-grid {
       grid-template-columns: 1fr;
     }
-    .sale-starts-grid {
-      grid-template-columns: 1fr;
+
+    /* Старты продаж: на мобильном — горизонтальный скролл */
+    .sale-starts-desktop {
+      display: none !important;
+    }
+    .sale-starts-mobile {
+      display: flex !important;
     }
     .features-grid {
       grid-template-columns: 1fr 1fr;
