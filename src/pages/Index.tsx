@@ -585,7 +585,7 @@ function Hero({ onSearch }: { onSearch: () => void }) {
           cursor: "pointer", whiteSpace: "nowrap",
           boxShadow: "0 2px 8px rgba(37,99,235,0.3)",
         }}>
-          {count.toLocaleString("ru-RU")}&nbsp;квартир&nbsp;в&nbsp;461&nbsp;ЖК
+          Найти квартиру
         </button>
       </div>
     </div>
