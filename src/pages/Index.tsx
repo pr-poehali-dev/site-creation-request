@@ -11,10 +11,11 @@ interface Launch {
   deadline: string;
   url: string;
   img?: string;
+  internalPage?: string;
 }
 
 const LAUNCHES: Launch[] = [
-  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg", internalPage: "project-aurum" },
   { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                     address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/2.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/49a9383e-fa69-46f1-a618-b4beda50fd1e.jpg" },
   { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",           deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/3.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/05467dc2-9496-46b9-b7ca-d2b982e53b11.jpg" },
   { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg" },
@@ -56,13 +57,18 @@ function ProjectAvatar({ id, img, size = 48 }: { id: number; img?: string; size?
 
 // ─── Карточка анонса — стиль trendagent ──────────────────────────────────────
 
-function LaunchCard({ item }: { item: Launch }) {
+function LaunchCard({ item, setPage }: { item: Launch; setPage?: (p: string) => void }) {
   const [hovered, setHovered] = useState(false);
   const title = item.developer ? item.developer : item.name;
   const subtitle = item.developer ? item.name : "";
 
   const handleClick = () => {
-    window.open(item.url, "_blank", "noopener,noreferrer");
+    if (item.internalPage && setPage) {
+      setPage(item.internalPage);
+      window.scrollTo({ top: 0 });
+    } else {
+      window.open(item.url, "_blank", "noopener,noreferrer");
+    }
   };
 
   return (
@@ -361,7 +367,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
 
       {/* Сетка карточек */}
       <div className="launches-grid">
-        {visible.map(item => <LaunchCard key={item.id} item={item} />)}
+        {visible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
       </div>
     </div>
   );
@@ -695,6 +701,232 @@ function ContactPage() {
   );
 }
 
+// ─── Страница объекта: Аурум Тайм ────────────────────────────────────────────
+
+const AURUM_SPECS = [
+  { label: "Застройщик",    value: "ГК Град Девелопмент" },
+  { label: "Старт продаж",  value: "Апрель 2026" },
+  { label: "Срок сдачи",    value: "4 кв. 2029" },
+  { label: "Тип дома",      value: "Монолитный" },
+  { label: "Фасад",         value: "Фасадное остекление, Комбинированный" },
+  { label: "Лифт",          value: "Пассажирский и грузовой" },
+  { label: "Паркинг",       value: "Подземный паркинг" },
+  { label: "Оплата",        value: "100% оплата, Ипотека, Рассрочка, Субсидии" },
+  { label: "Договор",       value: "ДДУ" },
+];
+
+const AURUM_FEATURES = [
+  { label: "Закрытый двор без машин",             img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Пешеходный бульвар и променад",        img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Детские площадки и плей-хабы",         img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Воркаут с профессиональным оборудованием", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Единая сеть Wi-Fi на территории всего комплекса", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Собственный спортивный клуб",          img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Детский клуб",                         img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Коворкинг",                            img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { label: "Подземный паркинг",                    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+];
+
+function ProjectAurumPage({ setPage }: { setPage: (p: string) => void }) {
+  const [activeTab, setActiveTab] = useState<"about" | "map" | "files">("about");
+  const [contactSent, setContactSent] = useState(false);
+  const [phone, setPhone] = useState("");
+
+  const tabs: { id: "about" | "map" | "files"; label: string }[] = [
+    { id: "about", label: "Об объекте" },
+    { id: "map",   label: "На карте"  },
+    { id: "files", label: "Файлы"     },
+  ];
+
+  const s = {
+    page: { background: "#F5F7FB", minHeight: "100vh", fontFamily: "Inter, sans-serif" } as React.CSSProperties,
+    wrap: { maxWidth: 1200, margin: "0 auto", padding: "0 clamp(1rem,4vw,3rem)" } as React.CSSProperties,
+  };
+
+  return (
+    <div style={s.page}>
+      {/* Хлебные крошки */}
+      <div style={{ ...s.wrap, paddingTop: "1.25rem", paddingBottom: "1rem", display: "flex", alignItems: "center", gap: 6 }}>
+        <button onClick={() => { setPage("home"); window.scrollTo({ top: 0 }); }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", fontSize: "0.82rem", display: "flex", alignItems: "center", gap: 4 }}>
+          <Icon name="ChevronLeft" size={14} /> Главная
+        </button>
+        <span style={{ color: "#D1D5DB" }}>›</span>
+        <button onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", fontSize: "0.82rem" }}>
+          Анонсы стартов продаж
+        </button>
+        <span style={{ color: "#D1D5DB" }}>›</span>
+        <span style={{ color: "#374151", fontSize: "0.82rem" }}>Аурум Тайм</span>
+      </div>
+
+      {/* Заголовок */}
+      <div style={{ ...s.wrap, marginBottom: "1.25rem" }}>
+        <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "clamp(1.4rem,3vw,2rem)", color: "#111827", margin: 0 }}>
+          Архитектурный проект Аурум Тайм
+        </h1>
+      </div>
+
+      {/* Табы */}
+      <div style={{ ...s.wrap, marginBottom: "1.5rem" }}>
+        <div style={{ display: "flex", gap: 0, borderBottom: "1px solid #E5E7EB" }}>
+          {tabs.map(t => (
+            <button key={t.id} onClick={() => setActiveTab(t.id)}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontFamily: "Inter, sans-serif", fontSize: "0.875rem", fontWeight: 500,
+                color: activeTab === t.id ? "#111827" : "#6B7280",
+                padding: "0.6rem 1.25rem",
+                borderBottom: activeTab === t.id ? "2px solid #111827" : "2px solid transparent",
+                marginBottom: -1,
+              }}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {activeTab === "about" && (
+        <div style={s.wrap}>
+          {/* Основной блок: фото + характеристики */}
+          <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1.6fr) minmax(0,1fr)", gap: "1.5rem", marginBottom: "1.5rem" }}
+            className="project-main-grid">
+            {/* Фото */}
+            <div>
+              <div style={{ borderRadius: 12, overflow: "hidden", background: "#E5E9F0", aspectRatio: "16/10" }}>
+                <img
+                  src="https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg"
+                  alt="Аурум Тайм"
+                  style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                />
+              </div>
+              {/* Адрес и метро */}
+              <div style={{ marginTop: "0.85rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: "0.4rem" }}>
+                  <Icon name="MapPin" size={13} style={{ color: "#6B7280" }} />
+                  <span style={{ fontSize: "0.82rem", color: "#374151" }}>Богородское, проезд 4-й Подбельского</span>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", paddingLeft: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#E53E3E", flexShrink: 0, display: "inline-block" }} />
+                    <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>Бульвар Рокоссовского (1л), 10 минут пешком</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+                    <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#9CA3AF", flexShrink: 0, display: "inline-block" }} />
+                    <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>Бульвар Рокоссовского (14л), 10 минут пешком</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Характеристики + контакт */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+              <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden" }}>
+                {AURUM_SPECS.map((spec, i) => (
+                  <div key={i} style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "flex-start",
+                    padding: "0.65rem 1rem",
+                    borderBottom: i < AURUM_SPECS.length - 1 ? "1px solid #F3F4F6" : "none",
+                    gap: 12,
+                  }}>
+                    <span style={{ fontSize: "0.78rem", color: "#9CA3AF", flexShrink: 0 }}>{spec.label}</span>
+                    <span style={{ fontSize: "0.78rem", color: "#111827", fontWeight: 500, textAlign: "right" }}>{spec.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Кнопка контакт */}
+              {contactSent ? (
+                <div style={{ background: "#DCFCE7", borderRadius: 10, padding: "0.85rem 1rem", textAlign: "center" }}>
+                  <Icon name="CheckCircle" size={18} style={{ color: "#16A34A", marginBottom: 4 }} />
+                  <div style={{ fontSize: "0.82rem", color: "#15803D", fontWeight: 600 }}>Заявка принята!</div>
+                  <div style={{ fontSize: "0.75rem", color: "#166534" }}>Свяжемся в ближайшее время</div>
+                </div>
+              ) : (
+                <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", padding: "1rem" }}>
+                  <div style={{ fontSize: "0.78rem", color: "#6B7280", marginBottom: "0.5rem" }}>Узнать подробности</div>
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <input
+                      type="tel" placeholder="+7 (___) ___-__-__"
+                      value={phone} onChange={e => setPhone(e.target.value)}
+                      style={{ flex: 1, border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.55rem 0.75rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", outline: "none", minWidth: 0 }}
+                    />
+                    <button onClick={() => setContactSent(true)}
+                      style={{ background: "#111827", color: "#fff", border: "none", borderRadius: 8, padding: "0.55rem 1rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap" }}>
+                      Контакты
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Об объекте */}
+          <div style={{ marginBottom: "2.5rem" }}>
+            <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.15rem", color: "#111827", marginBottom: "1.25rem" }}>Об объекте</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "minmax(0,1fr) minmax(0,1fr)", gap: "1.5rem" }} className="project-about-grid">
+              {/* Сетка удобств */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem" }}>
+                {AURUM_FEATURES.map((f, i) => (
+                  <div key={i} style={{ background: "#fff", borderRadius: 10, overflow: "hidden", border: "1px solid #E5E7EB" }}>
+                    <div style={{ background: "#E5E9F0", aspectRatio: "1", overflow: "hidden" }}>
+                      <img src={f.img} alt={f.label} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                    </div>
+                    <div style={{ padding: "0.5rem 0.6rem" }}>
+                      <span style={{ fontSize: "0.72rem", color: "#374151", lineHeight: 1.3, display: "block" }}>{f.label}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Текстовое описание */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
+                {[
+                  "Жилой комплекс состоит из 5 разновысотных секций высотой до 170 м и 6-этажного офисного корпуса. Здания возведены по монолитной технологии с фасадным остеклением или комбинированным фасадом, в составе которого использованы стекло, стемалит и алюминиевые панели в вентилируемой системе. Фасады дополнены вентиляционными решётками с индивидуальной перфорацией. Проект разработан архитектурным бюро АПЕКС. В доме установлены пассажирские и грузовые лифты, а входная группа оформлена в виде гранд-лобби с зоной отдыха.",
+                  "В проекте предложены квартиры с различными планировочными решениями, подходящими под разные сценарии жизни. Все помещения разработаны с учётом функциональности, комфорта и визуальной эстетики.",
+                  "Территория жилого комплекса закрыта и охраняется, полностью свободна от движения автомобилей. Для отдыха жителей предусмотрены пешеходный бульвар, променад, зоны отдыха под навесом и беседки, шахматные столы, детские площадки и плей-хабы. Для занятий спортом оборудован воркаут с тренажёрами от бренда MyEquilibria. В составе комплекса собственный спортивный клуб, детский клуб и коворкинг, действует единая сеть Wi-Fi. Предусмотрены подземный паркинг и коммерческие помещения на первых этажах.",
+                  "Проект расположен в Богородском районе Восточного административного округа Москвы, в окружении 3 крупных парков: Лосиный остров (9 км), Сокольники (4,5 км) и Измайлово (8 км). В 10 минутах пешком находится станция метро Бульвар Рокоссовского. В 5–15 минутах пешком расположены детские сады, школы, медицинские учреждения, магазины, кафе, аптеки, фитнес-клубы и торговые центры. Время в пути до ТТК — 15 минут транспортом, до МКАД — 20 минут, до центра Москвы — 25 минут.",
+                ].map((text, i) => (
+                  <p key={i} style={{ fontSize: "0.84rem", color: i === 0 ? "#374151" : "#6B7280", lineHeight: 1.7, margin: 0 }}>{text}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === "map" && (
+        <div style={{ ...s.wrap, paddingBottom: "3rem" }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", overflow: "hidden", height: 460 }}>
+            <iframe
+              src="https://yandex.ru/map-widget/v1/?ll=37.748%2C55.802&z=15&pt=37.748%2C55.802%2Cpm2rdl"
+              width="100%" height="100%" frameBorder="0" style={{ display: "block" }}
+              title="Карта Аурум Тайм"
+            />
+          </div>
+          <p style={{ fontSize: "0.78rem", color: "#9CA3AF", marginTop: "0.5rem" }}>
+            Богородское, проезд 4-й Подбельского · Метро Бульвар Рокоссовского, 10 мин. пешком
+          </p>
+        </div>
+      )}
+
+      {activeTab === "files" && (
+        <div style={{ ...s.wrap, paddingBottom: "3rem" }}>
+          <div style={{ background: "#fff", borderRadius: 12, border: "1px solid #E5E7EB", textAlign: "center", padding: "4rem 2rem" }}>
+            <div style={{ width: 52, height: 52, background: "#EFF6FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem" }}>
+              <Icon name="FileText" size={22} style={{ color: "#2563EB" }} />
+            </div>
+            <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1rem", marginBottom: "0.35rem", color: "#111827" }}>Документы появятся позже</h3>
+            <p style={{ color: "#6B7280", fontSize: "0.82rem" }}>Проектная документация будет добавлена при старте продаж</p>
+          </div>
+        </div>
+      )}
+
+      <div style={{ height: "2rem" }} />
+    </div>
+  );
+}
+
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer({ setPage }: { setPage: (p: string) => void }) {
@@ -743,11 +975,12 @@ export default function Index() {
     <div style={{ fontFamily: "Inter, sans-serif", minHeight: "100vh", background: "#ECF0F7" }}>
       <NavBar page={page} setPage={setPage} />
       <div style={{ paddingTop: 56 }}>
-        {page === "home"       && <HomePage       setPage={setPage} />}
-        {page === "catalog"    && <CatalogPage    />}
-        {page === "launches"   && <LaunchesPage   setPage={setPage} />}
-        {page === "developers" && <DevelopersPage />}
-        {page === "contact"    && <ContactPage    />}
+        {page === "home"            && <HomePage          setPage={setPage} />}
+        {page === "catalog"         && <CatalogPage       />}
+        {page === "launches"        && <LaunchesPage      setPage={setPage} />}
+        {page === "developers"      && <DevelopersPage    />}
+        {page === "contact"         && <ContactPage       />}
+        {page === "project-aurum"   && <ProjectAurumPage  setPage={setPage} />}
         <Footer setPage={setPage} />
       </div>
     </div>
