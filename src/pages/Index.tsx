@@ -105,9 +105,26 @@ function LaunchCard({ item }: { item: Launch }) {
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
+function useCountUp(target: number, duration = 1800) {
+  const [count, setCount] = useState(0);
+  useState(() => {
+    let start: number | null = null;
+    const step = (ts: number) => {
+      if (!start) start = ts;
+      const progress = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+  return count;
+}
+
 function Hero({ onSearch }: { onSearch: () => void }) {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("Квартиры");
+  const count = useCountUp(67_115);
   const tabs = [
     { label: "Квартиры",          icon: "Building2"  },
     { label: "Паркинги",          icon: "Car"        },
@@ -120,11 +137,11 @@ function Hero({ onSearch }: { onSearch: () => void }) {
   return (
     <div style={{ background: "#ECF0F7", padding: "3rem clamp(1rem,4vw,4rem) 3rem", textAlign: "center" }}>
       <h1 style={{
-        fontFamily: "Inter, sans-serif", fontWeight: 700,
+        fontFamily: "Inter, sans-serif", fontWeight: 500,
         fontSize: "clamp(1.8rem,4.5vw,3.2rem)", color: "#111827",
         lineHeight: 1.2, marginBottom: "2rem", letterSpacing: "-0.01em",
       }}>
-        Более&nbsp;66&nbsp;000&nbsp;квартир<br />в&nbsp;Москве
+        Более&nbsp;<span style={{ fontWeight: 700, color: "#2563EB" }}>{count.toLocaleString("ru-RU")}</span>&nbsp;квартир<br />в&nbsp;Москве
       </h1>
 
       {/* Табы */}
