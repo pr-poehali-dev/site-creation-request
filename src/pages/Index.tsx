@@ -297,14 +297,23 @@ function SaleStartCard({ item }: { item: SaleStart }) {
   );
 }
 
-// ─── Секция Старты продаж (слайдер по 3) ─────────────────────────────────────
+// ─── Секция Старты продаж ─────────────────────────────────────────────────────
 
 function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
-  const [page, setSliderPage] = useState(0);
+  const [sliderPage, setSliderPage] = useState(0);
+  const [mobExpanded, setMobExpanded] = useState(false);
   const perPage = 3;
   const totalPages = Math.ceil(SALE_STARTS.length / perPage);
-  const visible = SALE_STARTS.slice(page * perPage, page * perPage + perPage);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const visible = SALE_STARTS.slice(sliderPage * perPage, sliderPage * perPage + perPage);
+  const mobVisible = mobExpanded ? SALE_STARTS : SALE_STARTS.slice(0, 3);
+
+  const btnStyle: React.CSSProperties = {
+    position: "absolute", top: "40%", transform: "translateY(-50%)", zIndex: 10,
+    width: 32, height: 32, borderRadius: "50%", background: "#fff",
+    border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+    transition: "opacity 0.2s",
+  };
 
   return (
     <div style={{ background: "#fff", borderTop: "1px solid #E8EBF0" }}>
@@ -314,7 +323,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
           <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1.1rem", color: "#111827", margin: 0 }}>
             Старты продаж
           </h2>
-          <button onClick={() => { setPage("launches"); window.scrollTo({ top: 0 }); }}
+          <button onClick={() => { setPage("sale-starts"); window.scrollTo({ top: 0 }); }}
             style={{ background: "#fff", border: "1px solid #D1D5DB", borderRadius: 100, padding: "0.4rem 1.1rem", fontFamily: "Inter, sans-serif", fontSize: "0.8rem", fontWeight: 500, color: "#374151", cursor: "pointer" }}>
             Все старты продаж
           </button>
@@ -322,32 +331,51 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
 
         {/* Десктоп: 3 колонки + кнопки листания */}
         <div style={{ position: "relative", padding: "0 clamp(1rem,5vw,4rem)" }} className="sale-starts-desktop">
-          {page > 0 && (
-            <button onClick={() => setSliderPage(p => p - 1)}
-              style={{ position: "absolute", left: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {sliderPage > 0 && (
+            <button onClick={() => setSliderPage(p => p - 1)} style={{ ...btnStyle, left: 0 }}>
               <Icon name="ChevronLeft" size={16} style={{ color: "#374151" }} />
             </button>
           )}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem" }}>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem",
+            transition: "opacity 0.25s",
+          }}>
             {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
           </div>
-          {page < totalPages - 1 && (
-            <button onClick={() => setSliderPage(p => p + 1)}
-              style={{ position: "absolute", right: 0, top: "40%", transform: "translateY(-50%)", zIndex: 10, width: 32, height: 32, borderRadius: "50%", background: "#fff", border: "1px solid #D1D5DB", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {sliderPage < totalPages - 1 && (
+            <button onClick={() => setSliderPage(p => p + 1)} style={{ ...btnStyle, right: 0 }}>
               <Icon name="ChevronRight" size={16} style={{ color: "#374151" }} />
             </button>
           )}
+          {/* Точки-индикаторы */}
+          <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: "1.25rem" }}>
+            {Array.from({ length: totalPages }).map((_, i) => (
+              <button key={i} onClick={() => setSliderPage(i)} style={{
+                width: i === sliderPage ? 20 : 8, height: 8,
+                borderRadius: 100, border: "none", cursor: "pointer",
+                background: i === sliderPage ? "#2563EB" : "#D1D5DB",
+                transition: "all 0.25s", padding: 0,
+              }} />
+            ))}
+          </div>
         </div>
 
-        {/* Мобильный: горизонтальный скролл */}
-        <div ref={scrollRef}
-          className="sale-starts-mobile"
-          style={{ display: "none", overflowX: "auto", scrollSnapType: "x mandatory", scrollbarWidth: "none", gap: "0.75rem", padding: "0 1rem 0.5rem" }}>
-          {SALE_STARTS.map(item => (
-            <div key={item.id} style={{ scrollSnapAlign: "start", flexShrink: 0, width: "78vw", maxWidth: 320 }}>
-              <SaleStartCard item={item} />
-            </div>
+        {/* Мобильный: вертикальный список + кнопка раскрытия */}
+        <div className="sale-starts-mobile" style={{ display: "none", flexDirection: "column", gap: "0.75rem", padding: "0 1rem" }}>
+          {mobVisible.map(item => (
+            <SaleStartCard key={item.id} item={item} />
           ))}
+          {!mobExpanded && SALE_STARTS.length > 3 && (
+            <button onClick={() => setMobExpanded(true)} style={{
+              background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
+              padding: "0.65rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem",
+              fontWeight: 500, color: "#374151", cursor: "pointer", width: "100%",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            }}>
+              <Icon name="ChevronDown" size={14} />
+              Показать ещё {SALE_STARTS.length - 3}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -838,6 +866,30 @@ function CatalogPage() {
   );
 }
 
+// ─── Страница: Все старты продаж ──────────────────────────────────────────────
+
+function SaleStartsPage({ setPage }: { setPage: (p: string) => void }) {
+  return (
+    <div style={{ background: "#F5F7FB", minHeight: "100vh" }}>
+      <div style={{ padding: "1.5rem clamp(1rem,5vw,4rem) 0", display: "flex", alignItems: "center", gap: 6 }}>
+        <button onClick={() => { setPage("home"); window.scrollTo({ top: 0 }); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#6B7280", fontSize: "0.82rem", fontFamily: "Inter, sans-serif", display: "flex", alignItems: "center", gap: 4 }}>
+          <Icon name="ChevronLeft" size={14} /> Главная
+        </button>
+        <span style={{ color: "#D1D5DB" }}>›</span>
+        <span style={{ color: "#374151", fontSize: "0.82rem", fontFamily: "Inter, sans-serif" }}>Старты продаж</span>
+      </div>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "1rem clamp(1rem,5vw,4rem) 2rem" }}>
+        <h1 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.4rem", color: "#111827", marginBottom: "1.5rem" }}>
+          Все старты продаж — {SALE_STARTS.length} объектов
+        </h1>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.25rem" }}>
+          {SALE_STARTS.map(item => <SaleStartCard key={item.id} item={item} />)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Страница: Все анонсы ─────────────────────────────────────────────────────
 
 function LaunchesPage({ setPage }: { setPage: (p: string) => void }) {
@@ -1218,6 +1270,7 @@ export default function Index() {
         {page === "home"            && <HomePage          setPage={setPage} />}
         {page === "catalog"         && <CatalogPage       />}
         {page === "launches"        && <LaunchesPage      setPage={setPage} />}
+        {page === "sale-starts"     && <SaleStartsPage    setPage={setPage} />}
         {page === "developers"      && <DevelopersPage    />}
         {page === "contact"         && <ContactPage       />}
         {page === "project-aurum"   && <ProjectAurumPage  setPage={setPage} />}
