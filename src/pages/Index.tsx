@@ -10,19 +10,20 @@ interface Launch {
   address: string;
   deadline: string;
   url: string;
+  img?: string;
 }
 
 const LAUNCHES: Launch[] = [
   { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://lab.xn--d1alfcjp.xn--p1ai/1.html"  },
   { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                     address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/2.html"  },
   { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",           deadline: "весна 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/3.html"  },
-  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://lab.xn--d1alfcjp.xn--p1ai/4.html"  },
+  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://lab.xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg" },
   { id: 5,  developer: "Мангазея",          name: "Мангазея на Речном",                address: "Москва",                               deadline: "осень 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/5.html"  },
-  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",             address: "д. Измалково, Солнечная ул",            deadline: "2026 год",    url: "https://lab.xn--d1alfcjp.xn--p1ai/6.html"  },
+  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",             address: "д. Измалково, Солнечная ул",            deadline: "2026 год",    url: "https://lab.xn--d1alfcjp.xn--p1ai/6.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7522e5a5-00cd-4285-9572-ff923a5b251d.jpg" },
   { id: 7,  developer: "ГК СетьСтрой",     name: "Квартал Светлый 2 оч.",             address: "г. Балашиха, ул Твардовского",          deadline: "2026 год",    url: "https://lab.xn--d1alfcjp.xn--p1ai/7.html"  },
-  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",               address: "Донской, ул Шаболовка",                deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/8.html"  },
-  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                address: "Большой Палашевский переулок",          deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/9.html"  },
-  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                     address: "Хорошево-Мневники, ул Нижние Мневники", deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/10.html" },
+  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",               address: "Донской, ул Шаболовка",                deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/8.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f92e8f1b-a945-47c3-9d46-aa1ce75fafb3.png" },
+  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                address: "Большой Палашевский переулок",          deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/9.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56643ce7-a7be-4d71-b2a5-e031833b8901.jpg" },
+  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                     address: "Хорошево-Мневники, ул Нижние Мневники", deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/10.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/1dcd3797-4bb8-445a-bb4b-626aab2a2cbd.jpg" },
   { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                        address: "г. Химки, ул Рабочая",                 deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/11.html" },
   { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",    address: "пос. Светлые Горы, Пятницкое шоссе",  deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/12.html" },
 ];
@@ -36,15 +37,19 @@ const ROOM_LABELS = ["Студия", "1", "2", "3", "4+"];
 
 const ICON_NAMES = ["Building2","Building","Landmark","Home","Store","Warehouse","Hotel","School","Library","LayoutGrid","MapPin","Globe"];
 
-function ProjectAvatar({ id, size = 48 }: { id: number; size?: number }) {
+function ProjectAvatar({ id, img, size = 48 }: { id: number; img?: string; size?: number }) {
   const iconName = ICON_NAMES[(id - 1) % ICON_NAMES.length] as "Building2";
   return (
     <div style={{
       width: size, height: size, borderRadius: 10,
       background: "#E5E9F0", flexShrink: 0,
       display: "flex", alignItems: "center", justifyContent: "center",
+      overflow: "hidden",
     }}>
-      <Icon name={iconName} size={Math.round(size * 0.45)} style={{ color: "#8B97A8" }} />
+      {img
+        ? <img src={img} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        : <Icon name={iconName} size={Math.round(size * 0.45)} style={{ color: "#8B97A8" }} />
+      }
     </div>
   );
 }
@@ -73,7 +78,7 @@ function LaunchCard({ item }: { item: Launch }) {
       >
         {/* Avatar + title */}
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <ProjectAvatar id={item.id} size={48} />
+          <ProjectAvatar id={item.id} img={item.img} size={48} />
           <span style={{
             fontFamily: "Inter, sans-serif", fontWeight: 600,
             fontSize: "0.88rem", color: "#111827", lineHeight: 1.35,
