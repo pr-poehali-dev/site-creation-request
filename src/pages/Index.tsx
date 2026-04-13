@@ -60,7 +60,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "AFI Development", deadline: "Сдан – 1 кв. 2028",
     prices: [{ type: "Студии", price: "Цена под запрос" }, { type: "1-к.кв", price: "Цена под запрос" }, { type: "2Е-к.кв", price: "Цена под запрос" }],
     totalApts: 458, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/e55ce62a-a81a-470b-a459-e6ae911c4385.png",
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d1a5c423-6096-4525-b3d2-878b48be7b61.png",
   },
   {
     id: 2, name: "СберСити", isNew: false,
@@ -70,7 +70,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "СберСити", deadline: "2 кв. 2026 – 4 кв. 2028",
     prices: [{ type: "Студии", price: "от 24 802 692 ₽" }, { type: "1-к.кв", price: "от 29 842 650 ₽" }, { type: "2Е-к.кв", price: "от 25 582 100 ₽" }],
     totalApts: 161, views: 1, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/40073580-c447-4f12-9d99-c2998ce8619b.png",
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/173f351c-e6b5-4bbc-8dad-82f5c652a771.png",
   },
   {
     id: 3, name: "Пыжевский", isNew: true,
@@ -80,7 +80,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "Текта Групп", deadline: "2 кв. 2029",
     prices: [{ type: "2Е-к.кв", price: "от 238 943 151 ₽" }, { type: "3Е-к.кв", price: "от 426 475 566 ₽" }, { type: "4Е-к.кв", price: "от 458 957 772 ₽" }],
     totalApts: 24, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f70845ae-46f5-4d59-82ee-03bfbf1f553e.png",
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d0cfad23-2e1e-40b6-9878-8777249d5145.png",
   },
   {
     id: 4, name: "Большое Юрлово", isNew: true,
@@ -90,7 +90,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "ГК Самолет. Москва", deadline: "1 кв. 2028 – 3 кв. 2028",
     prices: [{ type: "Студии", price: "от 4 542 581 ₽" }, { type: "1-к.кв", price: "от 5 278 122 ₽" }, { type: "2Е-к.кв", price: "от 5 460 239 ₽" }],
     totalApts: 417, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/c9605b30-7066-4a14-b7e7-386d34078cfc.png",
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d1a5c423-6096-4525-b3d2-878b48be7b61.png",
   },
   {
     id: 5, name: "Мартемьяново Клаб", isNew: false,
@@ -100,7 +100,7 @@ const SALE_STARTS: SaleStart[] = [
     developer: "ГК ФСК. Москва", deadline: "2 кв. 2026 – 4 кв. 2027",
     prices: [{ type: "1-к.кв", price: "от 7 625 453 ₽" }, { type: "2Е-к.кв", price: "от 12 669 665 ₽" }, { type: "2-к.кв", price: "от 12 794 333 ₽" }],
     totalApts: 53, tags: ["Новостройки"],
-    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56599fbd-6c7c-47c7-87b3-91b0e0c6f24d.png",
+    img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/173f351c-e6b5-4bbc-8dad-82f5c652a771.png",
   },
   {
     id: 6, name: "МЫС", isNew: false,
