@@ -142,6 +142,36 @@ const SALE_STARTS: SaleStart[] = [
     totalApts: 140, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/d4abd92f-d58d-4dc4-8f54-27cb64e83df3.png",
   },
+  {
+    id: 10, name: "Литературный Квартал", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Пыхтино", metroColor: "#FF8C00", metroTime: "15 минут пешком",
+    location: "Новая Москва, деревня Рассказовка, ул Боровская",
+    developer: "ГК Самолет. Москва", deadline: "4 кв. 2028",
+    prices: [{ type: "Студии", price: "от 9 910 267 ₽" }, { type: "1-к.кв", price: "от 10 534 432 ₽" }, { type: "2Е-к.кв", price: "от 11 003 413 ₽" }],
+    totalApts: 198, views: 68, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/b20eabde-e5be-4397-bb4b-8f2e394c5031.jpg",
+  },
+  {
+    id: 11, name: "ТАТУМ", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Калужская", metroColor: "#FF8C00", metroTime: "5 минут пешком",
+    location: "Обручевский, ул Обручева",
+    developer: "FORMA", deadline: "1 кв. 2029",
+    prices: [{ type: "Студии", price: "от 18 303 624 ₽" }, { type: "1-к.кв", price: "от 21 390 345 ₽" }, { type: "2Е-к.кв", price: "от 21 459 645 ₽" }],
+    totalApts: 45, tags: ["Новостройки"],
+    img: "https://cdn.poehali.dev/files/02077f24-a23c-42f7-855b-315f1b6667e8.png",
+  },
+  {
+    id: 12, name: "Гостиничный комплекс Варшавские в...", isNew: false,
+    startLabel: "Апрель 2026",
+    metro: "Аннино", metroColor: "#9CA3AF", metroTime: "5 минут пешком",
+    location: "Южное Чертаново, Варшавское шоссе",
+    developer: "РГ-Девелопмент", deadline: "2 кв. 2026",
+    prices: [{ type: "Студии", price: "от 12 150 060 ₽" }, { type: "1-к.кв", price: "от 16 228 800 ₽" }, { type: "2-к.кв", price: "от 21 778 640 ₽" }],
+    totalApts: 116, tags: ["Новостройки", "Апартаменты"],
+    img: "https://cdn.poehali.dev/files/5cd0de12-0ff2-4d1e-8afe-3b490e178dab.png",
+  },
 ];
 
 // ─── Карточка старта продаж ───────────────────────────────────────────────────
