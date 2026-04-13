@@ -14,18 +14,18 @@ interface Launch {
 }
 
 const LAUNCHES: Launch[] = [
-  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://lab.xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
-  { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                     address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/2.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/49a9383e-fa69-46f1-a618-b4beda50fd1e.jpg" },
-  { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",           deadline: "весна 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/3.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/05467dc2-9496-46b9-b7ca-d2b982e53b11.jpg" },
-  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://lab.xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg" },
-  { id: 5,  developer: "Мангазея",          name: "Мангазея на Речном",                address: "Москва",                               deadline: "осень 2026",  url: "https://lab.xn--d1alfcjp.xn--p1ai/5.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b28b6b6f-2dbd-4393-95f1-88529e441bf1.jpg" },
-  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",             address: "д. Измалково, Солнечная ул",            deadline: "2026 год",    url: "https://lab.xn--d1alfcjp.xn--p1ai/6.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7522e5a5-00cd-4285-9572-ff923a5b251d.jpg" },
-  { id: 7,  developer: "ГК СетьСтрой",     name: "Квартал Светлый 2 оч.",             address: "г. Балашиха, ул Твардовского",          deadline: "2026 год",    url: "https://lab.xn--d1alfcjp.xn--p1ai/7.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d5d571af-6a7c-405e-b22c-0c739ba77d1b.jpg" },
-  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",               address: "Донской, ул Шаболовка",                deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/8.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f92e8f1b-a945-47c3-9d46-aa1ce75fafb3.png" },
-  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                address: "Большой Палашевский переулок",          deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/9.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56643ce7-a7be-4d71-b2a5-e031833b8901.jpg" },
-  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                     address: "Хорошево-Мневники, ул Нижние Мневники", deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/10.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/1dcd3797-4bb8-445a-bb4b-626aab2a2cbd.jpg" },
-  { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                        address: "г. Химки, ул Рабочая",                 deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/11.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b1395206-2a22-484f-9626-c1afe019ace9.jpg" },
-  { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",    address: "пос. Светлые Горы, Пятницкое шоссе",  deadline: "скоро",       url: "https://lab.xn--d1alfcjp.xn--p1ai/12.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/84741645-38d5-4d64-91d8-2d42516b863b.jpg" },
+  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg" },
+  { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                     address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/2.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/49a9383e-fa69-46f1-a618-b4beda50fd1e.jpg" },
+  { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",           deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/3.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/05467dc2-9496-46b9-b7ca-d2b982e53b11.jpg" },
+  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg" },
+  { id: 5,  developer: "Мангазея",          name: "Мангазея на Речном",                address: "Москва",                               deadline: "осень 2026",  url: "https://xn--d1alfcjp.xn--p1ai/5.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b28b6b6f-2dbd-4393-95f1-88529e441bf1.jpg" },
+  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",             address: "д. Измалково, Солнечная ул",            deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/6.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7522e5a5-00cd-4285-9572-ff923a5b251d.jpg" },
+  { id: 7,  developer: "ГК СетьСтрой",     name: "Квартал Светлый 2 оч.",             address: "г. Балашиха, ул Твардовского",          deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/7.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d5d571af-6a7c-405e-b22c-0c739ba77d1b.jpg" },
+  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",               address: "Донской, ул Шаболовка",                deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/8.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f92e8f1b-a945-47c3-9d46-aa1ce75fafb3.png" },
+  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                address: "Большой Палашевский переулок",          deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/9.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56643ce7-a7be-4d71-b2a5-e031833b8901.jpg" },
+  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                     address: "Хорошево-Мневники, ул Нижние Мневники", deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/10.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/1dcd3797-4bb8-445a-bb4b-626aab2a2cbd.jpg" },
+  { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                        address: "г. Химки, ул Рабочая",                 deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/11.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b1395206-2a22-484f-9626-c1afe019ace9.jpg" },
+  { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",    address: "пос. Светлые Горы, Пятницкое шоссе",  deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/12.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/84741645-38d5-4d64-91d8-2d42516b863b.jpg" },
 ];
 
 const DISTRICTS = ["Вся Москва", "ЦАО", "СВАО", "ВАО", "ЮВАО", "ЮАО", "ЮЗАО", "ЗАО", "СЗАО", "САО", "Новая Москва", "Подмосковье"];
@@ -54,57 +54,124 @@ function ProjectAvatar({ id, img, size = 48 }: { id: number; img?: string; size?
   );
 }
 
-// ─── Компактная карточка анонса ───────────────────────────────────────────────
+// ─── Карточка анонса — стиль trendagent ──────────────────────────────────────
 
 function LaunchCard({ item }: { item: Launch }) {
-  const title = item.developer ? `${item.developer} - ${item.name}` : item.name;
+  const [hovered, setHovered] = useState(false);
+  const title = item.developer ? item.developer : item.name;
+  const subtitle = item.developer ? item.name : "";
+
+  const handleClick = () => {
+    window.open(item.url, "_blank", "noopener,noreferrer");
+  };
 
   return (
-    <a href={item.url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", color: "inherit" }}>
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 12,
-          border: "1px solid #E2E6EE",
-          padding: "16px",
-          display: "flex",
-          flexDirection: "column",
-          gap: 8,
-          transition: "box-shadow 0.18s",
-          cursor: "pointer",
-        }}
-        onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.boxShadow = "none"; }}
-      >
-        {/* Avatar + title */}
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <ProjectAvatar id={item.id} img={item.img} size={48} />
-          <span style={{
-            fontFamily: "Inter, sans-serif", fontWeight: 600,
-            fontSize: "0.88rem", color: "#111827", lineHeight: 1.35,
-            overflow: "hidden", display: "-webkit-box",
-            WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+    <div
+      onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        borderRadius: 16,
+        overflow: "hidden",
+        cursor: "pointer",
+        position: "relative",
+        aspectRatio: "4/3",
+        background: "#1a1a2e",
+        boxShadow: hovered ? "0 12px 40px rgba(0,0,0,0.22)" : "0 2px 12px rgba(0,0,0,0.1)",
+        transform: hovered ? "translateY(-3px)" : "translateY(0)",
+        transition: "box-shadow 0.25s ease, transform 0.25s ease",
+      }}
+    >
+      {/* Фото */}
+      {item.img && (
+        <img
+          src={item.img}
+          alt={item.name}
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            objectFit: "cover",
+            transform: hovered ? "scale(1.04)" : "scale(1)",
+            transition: "transform 0.45s ease",
+          }}
+        />
+      )}
+
+      {/* Тёмный градиент снизу */}
+      <div style={{
+        position: "absolute", inset: 0,
+        background: "linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.35) 50%, rgba(0,0,0,0.08) 100%)",
+      }} />
+
+      {/* Тег срок сдачи — верх справа */}
+      <div style={{
+        position: "absolute", top: 14, right: 14,
+        background: "rgba(255,255,255,0.15)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
+        border: "1px solid rgba(255,255,255,0.25)",
+        borderRadius: 100,
+        padding: "4px 12px",
+        fontFamily: "Inter, sans-serif", fontSize: "0.72rem", fontWeight: 500,
+        color: "#fff", letterSpacing: "0.02em",
+        display: "flex", alignItems: "center", gap: 5,
+      }}>
+        <Icon name="Calendar" size={11} style={{ color: "rgba(255,255,255,0.8)" }} />
+        {item.deadline}
+      </div>
+
+      {/* Контент снизу */}
+      <div style={{
+        position: "absolute", bottom: 0, left: 0, right: 0,
+        padding: "1.2rem",
+      }}>
+        {/* Застройщик */}
+        {item.developer && (
+          <div style={{
+            fontFamily: "Inter, sans-serif", fontSize: "0.7rem", fontWeight: 500,
+            color: "rgba(255,255,255,0.65)", letterSpacing: "0.06em",
+            textTransform: "uppercase", marginBottom: 4,
           }}>
             {title}
-          </span>
-        </div>
-
-        {/* Address */}
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-          <Icon name="MapPin" size={12} style={{ color: "#9CA3AF", flexShrink: 0 }} />
-          <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>{item.address}</span>
-        </div>
-
-        {/* Date + link */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <Icon name="Calendar" size={12} style={{ color: "#9CA3AF" }} />
-            <span style={{ fontSize: "0.78rem", color: "#6B7280" }}>{item.deadline}</span>
           </div>
-          <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "#2563EB" }}>Подробнее</span>
+        )}
+
+        {/* Название ЖК */}
+        <div style={{
+          fontFamily: "Inter, sans-serif", fontWeight: 700,
+          fontSize: "clamp(0.95rem, 2vw, 1.1rem)", color: "#fff",
+          lineHeight: 1.25, marginBottom: 6,
+        }}>
+          {subtitle || title}
+        </div>
+
+        {/* Адрес + кнопка */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 5, minWidth: 0 }}>
+            <Icon name="MapPin" size={11} style={{ color: "rgba(255,255,255,0.6)", flexShrink: 0 }} />
+            <span style={{
+              fontSize: "0.75rem", color: "rgba(255,255,255,0.7)",
+              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+            }}>
+              {item.address}
+            </span>
+          </div>
+          <div style={{
+            flexShrink: 0,
+            background: "#fff",
+            color: "#111827",
+            borderRadius: 100,
+            padding: "5px 14px",
+            fontFamily: "Inter, sans-serif", fontSize: "0.72rem", fontWeight: 600,
+            display: "flex", alignItems: "center", gap: 5,
+            whiteSpace: "nowrap",
+          }}>
+            Подробнее
+            <Icon name="ArrowUpRight" size={11} />
+          </div>
         </div>
       </div>
-    </a>
+    </div>
   );
 }
 
