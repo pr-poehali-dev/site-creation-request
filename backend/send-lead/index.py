@@ -1,11 +1,10 @@
 import os
 import json
 import urllib.request
-import urllib.parse
 
 
 def handler(event: dict, context) -> dict:
-    """Отправляет заявку с сайта в Telegram-бот"""
+    """Прокси: принимает заявку с сайта и отправляет её через relay API в Telegram"""
 
     cors_headers = {
         "Access-Control-Allow-Origin": "*",
@@ -29,47 +28,46 @@ def handler(event: dict, context) -> dict:
             "body": json.dumps({"error": "Имя и телефон обязательны"}),
         }
 
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
-
-    if not token or not chat_id:
+    api_key = os.environ.get("RELAY_API_KEY", "")
+    if not api_key:
         return {
             "statusCode": 500,
             "headers": cors_headers,
-            "body": json.dumps({"error": "Telegram не настроен"}),
+            "body": json.dumps({"error": "Relay API не настроен"}),
         }
 
     lines = [
-        "📋 *Новая заявка с сайта*",
+        "Новая заявка с сайта",
         "",
-        f"👤 Имя: {name}",
-        f"📞 Телефон: {phone}",
-        f"🕐 Время звонка: {call_time or 'не указано'}",
+        f"Имя: {name}",
+        f"Телефон: {phone}",
+        f"Когда перезвонить: {call_time or 'не указано'}",
     ]
     if source:
-        lines.append(f"📌 Источник: {source}")
+        lines.append(f"Источник: {source}")
 
     text = "\n".join(lines)
-
-    data = urllib.parse.urlencode({
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "Markdown",
-    }).encode()
+    payload = json.dumps({"text": text}).encode("utf-8")
 
     req = urllib.request.Request(
-        f"https://api.telegram.org/bot{token}/sendMessage",
-        data=data,
+        "http://80.76.33.199:8081/send",
+        data=payload,
         method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": api_key,
+        },
     )
-    with urllib.request.urlopen(req, timeout=10) as resp:
-        tg_resp = json.loads(resp.read())
 
-    if not tg_resp.get("ok"):
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            relay_resp = resp.read()
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode("utf-8", errors="replace")
         return {
-            "statusCode": 500,
+            "statusCode": 502,
             "headers": cors_headers,
-            "body": json.dumps({"error": "Ошибка Telegram", "details": tg_resp}),
+            "body": json.dumps({"error": "Relay API error", "details": error_body}),
         }
 
     return {
