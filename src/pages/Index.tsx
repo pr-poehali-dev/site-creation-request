@@ -516,16 +516,7 @@ function useCountUp(target: number, duration = 1800) {
 
 function Hero({ onSearch }: { onSearch: () => void }) {
   const [search, setSearch] = useState("");
-  const [activeTab, setActiveTab] = useState("Квартиры");
   const count = useCountUp(67_115);
-  const tabs = [
-    { label: "Квартиры",          icon: "Building2"  },
-    { label: "Паркинги",          icon: "Car"        },
-    { label: "Дома с участками",  icon: "Home"       },
-    { label: "Участки",           icon: "TreePine"   },
-    { label: "Подрядчики",        icon: "HardHat"    },
-    { label: "Коммерция",         icon: "Store"      },
-  ];
 
   return (
     <div style={{ background: "#ECF0F7", padding: "3rem clamp(1rem,4vw,4rem) 3rem", textAlign: "center" }}>
@@ -536,29 +527,6 @@ function Hero({ onSearch }: { onSearch: () => void }) {
       }}>
         Более&nbsp;<span style={{ fontWeight: 700, color: "#2563EB" }}>{count.toLocaleString("ru-RU")}</span>&nbsp;квартир<br />в&nbsp;Москве
       </h1>
-
-      {/* Табы */}
-      <div className="hero-tabs" style={{ marginBottom: "1.25rem" }}>
-        {tabs.map(t => (
-          <button
-            key={t.label}
-            onClick={() => setActiveTab(t.label)}
-            style={{
-              background: "#fff",
-              border: `1px solid ${activeTab === t.label ? "#B0BCCE" : "#D1D8E4"}`,
-              borderRadius: 100,
-              padding: "0.45rem 0.9rem",
-              fontFamily: "Inter, sans-serif", fontSize: "0.82rem", fontWeight: 500,
-              color: "#374151", cursor: "pointer",
-              display: "flex", alignItems: "center", gap: 6,
-              boxShadow: activeTab === t.label ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
-            }}
-          >
-            <Icon name={t.icon as "Building2"} size={13} style={{ color: "#6B7280" }} />
-            {t.label}
-          </button>
-        ))}
-      </div>
 
       {/* Поисковая строка */}
       <div
@@ -739,6 +707,42 @@ function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) 
 
   return (
     <>
+      <style>{`
+        .burger-btn {
+          background: none; border: none; cursor: pointer;
+          margin-left: auto; padding: 8px; border-radius: 8px;
+          display: flex; align-items: center; justify-content: center;
+          transition: background 0.15s;
+        }
+        .burger-btn:hover { background: #F3F4F6; }
+        .burger-btn:active { background: #E5E7EB; }
+        .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 22px; }
+        .burger-line {
+          height: 2px; background: #374151; border-radius: 2px;
+          transition: transform 0.25s ease, opacity 0.2s ease, width 0.2s ease;
+          transform-origin: center;
+        }
+        .burger-line-1.open { transform: translateY(7px) rotate(45deg); }
+        .burger-line-2.open { opacity: 0; transform: scaleX(0); }
+        .burger-line-3.open { transform: translateY(-7px) rotate(-45deg); }
+        .mob-menu {
+          position: fixed; top: 56px; left: 0; right: 0; zIndex: 99;
+          background: #fff; border-bottom: 1px solid #E8EBF0;
+          padding: 0.5rem 0.75rem 1rem;
+          animation: slideDown 0.2s ease;
+        }
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .mob-phone-bar {
+          display: none;
+        }
+        @media (max-width: 640px) {
+          .mob-phone-bar { display: flex; }
+        }
+      `}</style>
+
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         background: "#fff", borderBottom: "1px solid #E8EBF0",
@@ -779,18 +783,58 @@ function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) 
           </button>
         </div>
 
-        <button className="nav-burger" onClick={() => setMob(!mob)} style={{ background: "none", border: "none", cursor: "pointer", marginLeft: "auto" }}>
-          <Icon name={mob ? "X" : "Menu"} size={22} style={{ color: "#374151" }} />
+        {/* Мобильная шапка: телефон + бургер */}
+        <div className="mob-phone-bar" style={{ alignItems: "center", gap: 8 }}>
+          <a href="tel:+74999612341" style={{
+            display: "flex", alignItems: "center", gap: 4,
+            textDecoration: "none", color: "#2563EB",
+            fontWeight: 700, fontSize: "0.78rem", fontFamily: "Inter, sans-serif",
+            whiteSpace: "nowrap",
+          }}>
+            <Icon name="Phone" size={13} style={{ color: "#2563EB" }} />
+            961-23-41
+          </a>
+        </div>
+
+        <button className="burger-btn nav-burger" onClick={() => setMob(!mob)} aria-label="Меню">
+          <div className="burger-icon">
+            <div className={`burger-line burger-line-1${mob ? " open" : ""}`} />
+            <div className={`burger-line burger-line-2${mob ? " open" : ""}`} />
+            <div className={`burger-line burger-line-3${mob ? " open" : ""}`} />
+          </div>
         </button>
       </nav>
 
       {mob && (
-        <div style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 99, background: "#fff", borderBottom: "1px solid #E8EBF0", padding: "0.75rem" }}>
+        <div className="mob-menu" style={{ position: "fixed", top: 56, left: 0, right: 0, zIndex: 99, background: "#fff", borderBottom: "1px solid #E8EBF0", padding: "0.5rem 0.75rem 1rem" }}>
           {links.map(l => (
-            <button key={l.id} onClick={() => go(l.id)} style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "Inter, sans-serif", fontSize: "0.9rem", color: page === l.id ? "#2563EB" : "#374151", padding: "0.65rem 1rem", borderRadius: 8 }}>
+            <button key={l.id} onClick={() => go(l.id)} style={{
+              display: "block", width: "100%", textAlign: "left",
+              background: page === l.id ? "#EFF6FF" : "none",
+              border: "none", cursor: "pointer",
+              fontFamily: "Inter, sans-serif", fontSize: "0.9rem",
+              color: page === l.id ? "#2563EB" : "#374151",
+              padding: "0.7rem 1rem", borderRadius: 8,
+              fontWeight: page === l.id ? 600 : 400,
+              transition: "background 0.12s",
+            }}>
               {l.label}
             </button>
           ))}
+          <div style={{ borderTop: "1px solid #F3F4F6", margin: "0.5rem 0" }} />
+          <a href="tel:+74999612341" style={{
+            display: "flex", alignItems: "center", gap: 10,
+            textDecoration: "none", padding: "0.7rem 1rem",
+            borderRadius: 8, background: "#EFF6FF",
+          }}>
+            <div style={{ width: 32, height: 32, background: "#2563EB", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <Icon name="Phone" size={15} style={{ color: "#fff" }} />
+            </div>
+            <div>
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.7rem", color: "#6B7280", marginBottom: 1 }}>Позвонить</div>
+              <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "0.92rem", color: "#2563EB" }}>+7 (499) 961-23-41</div>
+            </div>
+          </a>
         </div>
       )}
     </>

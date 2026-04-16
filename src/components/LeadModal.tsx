@@ -9,6 +9,9 @@ function generateCaptcha() {
   return { a, b, answer: a + b };
 }
 
+const HOURS = Array.from({ length: 13 }, (_, i) => i + 9); // 9..21
+const MINUTES = [0, 10, 20, 30, 40, 50];
+
 interface LeadModalProps {
   open: boolean;
   onClose: () => void;
@@ -19,7 +22,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [callMode, setCallMode] = useState<"asap" | "custom">("asap");
-  const [callTime, setCallTime] = useState("");
+  const [callHour, setCallHour] = useState("9");
+  const [callMin, setCallMin] = useState("0");
   const [captcha, setCaptcha] = useState(generateCaptcha);
   const [captchaInput, setCaptchaInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +38,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
       setName("");
       setPhone("");
       setCallMode("asap");
-      setCallTime("");
+      setCallHour("9");
+      setCallMin("0");
       setSent(false);
       setError("");
     }
@@ -47,7 +52,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   }, [open, onClose]);
 
   const captchaOk = parseInt(captchaInput, 10) === captcha.answer;
-  const callTimeOk = callMode === "asap" || callTime.trim() !== "";
+  const callTimeOk = callMode === "asap" || true; // час/мин всегда выбраны по умолчанию
   const canSubmit = name.trim() && phone.trim() && captchaOk && callTimeOk && !loading;
 
   const handleSubmit = async () => {
@@ -55,7 +60,9 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     setLoading(true);
     setError("");
     try {
-      const callTimeValue = callMode === "asap" ? "Как можно скорее" : callTime;
+      const h = String(callHour).padStart(2, "0");
+      const m = String(callMin).padStart(2, "0");
+      const callTimeValue = callMode === "asap" ? "Как можно скорее" : `${h}:${m}`;
       const res = await fetch(SEND_LEAD_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -83,9 +90,16 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     fontSize: "0.875rem", color: "#111827", outline: "none",
     background: "#fff",
   };
-  const label: React.CSSProperties = {
+  const labelStyle: React.CSSProperties = {
     fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
     fontWeight: 600, color: "#374151", marginBottom: 6, display: "block",
+  };
+  const selectStyle: React.CSSProperties = {
+    flex: 1, border: "1px solid #D1D5DB", borderRadius: 8,
+    padding: "0.6rem 0.5rem", fontFamily: "Inter, sans-serif",
+    fontSize: "0.95rem", color: "#111827", outline: "none",
+    background: "#fff", textAlign: "center",
+    appearance: "none" as const, cursor: "pointer",
   };
 
   return (
@@ -142,7 +156,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
-                <label style={label}>Имя</label>
+                <label style={labelStyle}>Имя</label>
                 <input
                   style={inp}
                   placeholder="Ваше имя"
@@ -152,7 +166,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
               </div>
 
               <div>
-                <label style={label}>Телефон</label>
+                <label style={labelStyle}>Телефон</label>
                 <input
                   style={inp}
                   placeholder="+7 (___) ___-__-__"
@@ -163,8 +177,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
               </div>
 
               <div>
-                <label style={label}>Когда перезвонить</label>
-                <div style={{ display: "flex", gap: 8 }}>
+                <label style={labelStyle}>Когда перезвонить</label>
+                <div style={{ display: "flex", gap: 8, marginBottom: callMode === "custom" ? 10 : 0 }}>
                   <button
                     onClick={() => setCallMode("asap")}
                     style={{
@@ -194,18 +208,51 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                     Выбрать время
                   </button>
                 </div>
+
                 {callMode === "custom" && (
-                  <input
-                    type="time"
-                    style={{ ...inp, marginTop: 8 }}
-                    value={callTime}
-                    onChange={(e) => setCallTime(e.target.value)}
-                  />
+                  <div style={{
+                    border: "2px solid #2563EB", borderRadius: 10,
+                    background: "#EFF6FF", padding: "0.85rem 1rem",
+                    marginTop: 2,
+                  }}>
+                    <div style={{
+                      fontFamily: "Inter, sans-serif", fontSize: "0.78rem",
+                      fontWeight: 600, color: "#2563EB", marginBottom: 10,
+                      display: "flex", alignItems: "center", gap: 6,
+                    }}>
+                      <Icon name="Clock" size={14} />
+                      Выберите удобное время звонка
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <select
+                        value={callHour}
+                        onChange={(e) => setCallHour(e.target.value)}
+                        style={selectStyle}
+                      >
+                        {HOURS.map(h => (
+                          <option key={h} value={String(h)}>{String(h).padStart(2, "0")}</option>
+                        ))}
+                      </select>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#374151" }}>:</span>
+                      <select
+                        value={callMin}
+                        onChange={(e) => setCallMin(e.target.value)}
+                        style={selectStyle}
+                      >
+                        {MINUTES.map(m => (
+                          <option key={m} value={String(m)}>{String(m).padStart(2, "0")}</option>
+                        ))}
+                      </select>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#6B7280", whiteSpace: "nowrap" }}>
+                        (с 09:00 до 21:00)
+                      </span>
+                    </div>
+                  </div>
                 )}
               </div>
 
               <div>
-                <label style={label}>Подтверждение: {captcha.a} + {captcha.b} = ?</label>
+                <label style={labelStyle}>Подтверждение: {captcha.a} + {captcha.b} = ?</label>
                 <input
                   style={{
                     ...inp,
