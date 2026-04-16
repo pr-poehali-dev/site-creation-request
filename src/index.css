@@ -39,6 +39,7 @@
   }
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
   body {
     font-family:
@@ -49,6 +50,7 @@
     background-color: var(--bg);
     color: var(--text-primary);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
   }
 }
 
@@ -278,8 +280,12 @@
     gap: 1rem;
     flex-shrink: 0;
   }
+  /* Бургер скрыт на десктопе */
   .nav-burger {
-    display: none;
+    display: none !important;
+  }
+  .mob-phone-bar {
+    display: none !important;
   }
 
   /* Hero */
@@ -348,7 +354,10 @@
       display: none;
     }
     .nav-burger {
-      display: flex;
+      display: flex !important;
+    }
+    .mob-phone-bar {
+      display: flex !important;
     }
 
     /* Hero */

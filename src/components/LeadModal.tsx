@@ -47,8 +47,29 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    if (open) document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
+    if (open) {
+      document.addEventListener("keydown", onKey);
+      // Блокируем прокрутку body, сохраняем позицию
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.overflowY = "scroll";
+    }
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      if (open) {
+        // Восстанавливаем прокрутку без сдвига
+        const scrollY = document.body.style.top;
+        document.body.style.position = "";
+        document.body.style.top = "";
+        document.body.style.left = "";
+        document.body.style.right = "";
+        document.body.style.overflowY = "";
+        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
+      }
+    };
   }, [open, onClose]);
 
   const captchaOk = parseInt(captchaInput, 10) === captcha.answer;
@@ -110,14 +131,18 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
         position: "fixed", inset: 0, zIndex: 1000,
         background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)",
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "1rem",
+        overflowX: "hidden", overflowY: "auto",
+        WebkitOverflowScrolling: "touch" as const,
       }}
     >
       <div style={{
-        background: "#fff", borderRadius: 16, width: "100%", maxWidth: 440,
-        padding: "2rem", position: "relative",
+        background: "#fff", borderRadius: 16,
+        width: "calc(100% - 2rem)", maxWidth: 440,
+        padding: "1.5rem", position: "relative",
         boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-        maxHeight: "90vh", overflowY: "auto",
+        maxHeight: "90dvh", overflowY: "auto",
+        margin: "1rem auto", flexShrink: 0,
+        boxSizing: "border-box",
       }}>
         <button
           onClick={onClose}

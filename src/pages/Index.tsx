@@ -710,36 +710,31 @@ function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) 
       <style>{`
         .burger-btn {
           background: none; border: none; cursor: pointer;
-          margin-left: auto; padding: 8px; border-radius: 8px;
+          padding: 9px; border-radius: 10px;
           display: flex; align-items: center; justify-content: center;
-          transition: background 0.15s;
+          transition: background 0.15s, transform 0.1s;
+          -webkit-tap-highlight-color: transparent;
         }
         .burger-btn:hover { background: #F3F4F6; }
-        .burger-btn:active { background: #E5E7EB; }
+        .burger-btn:active { background: #E5E7EB; transform: scale(0.94); }
         .burger-icon { display: flex; flex-direction: column; gap: 5px; width: 22px; }
         .burger-line {
-          height: 2px; background: #374151; border-radius: 2px;
-          transition: transform 0.25s ease, opacity 0.2s ease, width 0.2s ease;
+          height: 2px; background: #1F2937; border-radius: 2px;
+          transition: transform 0.25s cubic-bezier(.4,0,.2,1), opacity 0.2s ease, width 0.2s ease;
           transform-origin: center;
         }
-        .burger-line-1.open { transform: translateY(7px) rotate(45deg); }
+        .burger-line-1.open { transform: translateY(7px) rotate(45deg); background: #2563EB; }
         .burger-line-2.open { opacity: 0; transform: scaleX(0); }
-        .burger-line-3.open { transform: translateY(-7px) rotate(-45deg); }
+        .burger-line-3.open { transform: translateY(-7px) rotate(-45deg); background: #2563EB; }
         .mob-menu {
-          position: fixed; top: 56px; left: 0; right: 0; zIndex: 99;
+          position: fixed; top: 56px; left: 0; right: 0; z-index: 99;
           background: #fff; border-bottom: 1px solid #E8EBF0;
           padding: 0.5rem 0.75rem 1rem;
-          animation: slideDown 0.2s ease;
+          animation: slideDown 0.2s cubic-bezier(.4,0,.2,1);
         }
         @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-8px); }
+          from { opacity: 0; transform: translateY(-10px); }
           to   { opacity: 1; transform: translateY(0); }
-        }
-        .mob-phone-bar {
-          display: none;
-        }
-        @media (max-width: 640px) {
-          .mob-phone-bar { display: flex; }
         }
       `}</style>
 
@@ -796,7 +791,7 @@ function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) 
           </a>
         </div>
 
-        <button className="burger-btn nav-burger" onClick={() => setMob(!mob)} aria-label="Меню">
+        <button className="burger-btn nav-burger" onClick={() => setMob(v => !v)} aria-label="Меню">
           <div className="burger-icon">
             <div className={`burger-line burger-line-1${mob ? " open" : ""}`} />
             <div className={`burger-line burger-line-2${mob ? " open" : ""}`} />
