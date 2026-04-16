@@ -9,7 +9,7 @@ function generateCaptcha() {
   return { a, b, answer: a + b };
 }
 
-const HOURS = Array.from({ length: 13 }, (_, i) => i + 9); // 9..21
+const HOURS = Array.from({ length: 13 }, (_, i) => i + 9);
 const MINUTES = [0, 10, 20, 30, 40, 50];
 
 interface LeadModalProps {
@@ -30,6 +30,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const overlayRef = useRef<HTMLDivElement>(null);
+  const scrollYRef = useRef(0);
 
   useEffect(() => {
     if (open) {
@@ -45,36 +46,41 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     }
   }, [open]);
 
+  // Блокировка body-скролла без position:fixed (избегаем iOS-глюков)
   useEffect(() => {
+    if (!open) return;
+
+    scrollYRef.current = window.scrollY;
+
+    // Единственный надёжный способ на iOS без смещения layout:
+    // touch-action на body + overflow hidden на html
+    const html = document.documentElement;
+    const body = document.body;
+
+    const prevHtmlOverflow = html.style.overflow;
+    const prevBodyOverflow = body.style.overflow;
+    const prevBodyWidth = body.style.width;
+
+    html.style.overflow = "hidden";
+    body.style.overflow = "hidden";
+    // Фиксируем ширину body явно, чтобы не схлопнулась при скрытии скроллбара
+    body.style.width = "100%";
+
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
-    if (open) {
-      document.addEventListener("keydown", onKey);
-      // Блокируем прокрутку body, сохраняем позицию
-      const scrollY = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
-      document.body.style.overflowY = "scroll";
-    }
+    document.addEventListener("keydown", onKey);
+
     return () => {
       document.removeEventListener("keydown", onKey);
-      if (open) {
-        // Восстанавливаем прокрутку без сдвига
-        const scrollY = document.body.style.top;
-        document.body.style.position = "";
-        document.body.style.top = "";
-        document.body.style.left = "";
-        document.body.style.right = "";
-        document.body.style.overflowY = "";
-        window.scrollTo(0, parseInt(scrollY || "0", 10) * -1);
-      }
+      html.style.overflow = prevHtmlOverflow;
+      body.style.overflow = prevBodyOverflow;
+      body.style.width = prevBodyWidth;
+      // Восстанавливаем позицию скролла
+      window.scrollTo({ top: scrollYRef.current, behavior: "instant" as ScrollBehavior });
     };
   }, [open, onClose]);
 
   const captchaOk = parseInt(captchaInput, 10) === captcha.answer;
-  const callTimeOk = callMode === "asap" || true; // час/мин всегда выбраны по умолчанию
-  const canSubmit = name.trim() && phone.trim() && captchaOk && callTimeOk && !loading;
+  const canSubmit = !!(name.trim() && phone.trim() && captchaOk && !loading);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -105,51 +111,110 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   if (!open) return null;
 
   const inp: React.CSSProperties = {
-    width: "100%", boxSizing: "border-box",
-    border: "1px solid #D1D5DB", borderRadius: 8,
-    padding: "0.6rem 0.85rem", fontFamily: "Inter, sans-serif",
-    fontSize: "0.875rem", color: "#111827", outline: "none",
+    // width: 100% + box-sizing гарантируют что input не вылезет за padding родителя
+    width: "100%",
+    boxSizing: "border-box",
+    minWidth: 0, // сброс дефолтного min-width у input
+    border: "1px solid #D1D5DB",
+    borderRadius: 8,
+    padding: "0.6rem 0.85rem",
+    fontFamily: "Inter, sans-serif",
+    // 16px минимум — предотвращает zoom на iOS при фокусе
+    fontSize: "16px",
+    color: "#111827",
+    outline: "none",
     background: "#fff",
-  };
-  const labelStyle: React.CSSProperties = {
-    fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
-    fontWeight: 600, color: "#374151", marginBottom: 6, display: "block",
-  };
-  const selectStyle: React.CSSProperties = {
-    flex: 1, border: "1px solid #D1D5DB", borderRadius: 8,
-    padding: "0.6rem 0.5rem", fontFamily: "Inter, sans-serif",
-    fontSize: "0.95rem", color: "#111827", outline: "none",
-    background: "#fff", textAlign: "center",
-    appearance: "none" as const, cursor: "pointer",
+    display: "block",
+    appearance: "none" as const,
   };
 
+  const labelStyle: React.CSSProperties = {
+    fontFamily: "Inter, sans-serif",
+    fontSize: "0.8rem",
+    fontWeight: 600,
+    color: "#374151",
+    marginBottom: 6,
+    display: "block",
+  };
+
+  const selectStyle: React.CSSProperties = {
+    flex: "1 1 0",
+    minWidth: 0,
+    border: "1px solid #D1D5DB",
+    borderRadius: 8,
+    padding: "0.6rem 0.25rem",
+    fontFamily: "Inter, sans-serif",
+    fontSize: "16px",
+    color: "#111827",
+    outline: "none",
+    background: "#fff",
+    textAlign: "center",
+    cursor: "pointer",
+    boxSizing: "border-box",
+    width: "100%",
+  };
+
+  const modeBtn = (active: boolean): React.CSSProperties => ({
+    flex: "1 1 0",
+    minWidth: 0, // критично: без этого flex-кнопки не сжимаются
+    padding: "0.55rem 0.25rem",
+    borderRadius: 8,
+    border: "2px solid",
+    borderColor: active ? "#2563EB" : "#D1D5DB",
+    background: active ? "#EFF6FF" : "#fff",
+    color: active ? "#2563EB" : "#374151",
+    fontFamily: "Inter, sans-serif",
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    cursor: "pointer",
+    transition: "all 0.15s",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    boxSizing: "border-box",
+  });
+
   return (
+    // Оверлей: position:fixed inset:0 — не добавляем ширину сверх viewport
     <div
       ref={overlayRef}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
       style={{
-        position: "fixed", inset: 0, zIndex: 1000,
-        background: "rgba(0,0,0,0.45)", backdropFilter: "blur(2px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        overflowX: "hidden", overflowY: "auto",
-        WebkitOverflowScrolling: "touch" as const,
+        position: "fixed",
+        top: 0, left: 0, right: 0, bottom: 0,
+        zIndex: 1000,
+        background: "rgba(0,0,0,0.5)",
+        // НЕ используем backdropFilter — он создаёт stacking context и глючит на iOS
+        overflowY: "auto",
+        overflowX: "hidden",
+        // Центрируем через padding вместо flex — flex на iOS иногда считает ширину неверно
+        padding: "1rem 0",
+        boxSizing: "border-box",
       }}
     >
-      <div style={{
-        background: "#fff", borderRadius: 16,
-        width: "calc(100% - 2rem)", maxWidth: 440,
-        padding: "1.5rem", position: "relative",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-        maxHeight: "90dvh", overflowY: "auto",
-        margin: "1rem auto", flexShrink: 0,
-        boxSizing: "border-box",
-      }}>
+      {/* Внутренний контейнер: явная ширина через margin+padding, не через flex */}
+      <div
+        style={{
+          background: "#fff",
+          borderRadius: 16,
+          // margin auto + width = надёжнее чем flex-центрирование на iOS
+          width: "92%",
+          maxWidth: 420,
+          margin: "0 auto",
+          padding: "1.5rem",
+          position: "relative",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+          boxSizing: "border-box",
+          // НЕ ставим overflowY:auto здесь — это вызывает баг с клавиатурой на iOS
+        }}
+      >
         <button
           onClick={onClose}
           style={{
-            position: "absolute", top: 14, right: 14, background: "none",
-            border: "none", cursor: "pointer", padding: 4, borderRadius: 6,
-            color: "#9CA3AF",
+            position: "absolute", top: 12, right: 12,
+            background: "none", border: "none", cursor: "pointer",
+            padding: 6, borderRadius: 6, color: "#9CA3AF",
+            lineHeight: 0,
           }}
         >
           <Icon name="X" size={18} />
@@ -175,11 +240,15 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
           </div>
         ) : (
           <>
-            <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.15rem", color: "#111827", marginBottom: "1.5rem" }}>
+            <div style={{
+              fontFamily: "Inter, sans-serif", fontWeight: 700,
+              fontSize: "1.1rem", color: "#111827", marginBottom: "1.25rem",
+              paddingRight: "1.5rem", // место под кнопку закрытия
+            }}>
               Оставить заявку
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
               <div>
                 <label style={labelStyle}>Имя</label>
                 <input
@@ -187,6 +256,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                   placeholder="Ваше имя"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
                 />
               </div>
 
@@ -198,47 +268,31 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
                 />
               </div>
 
               <div>
                 <label style={labelStyle}>Когда перезвонить</label>
-                <div style={{ display: "flex", gap: 8, marginBottom: callMode === "custom" ? 10 : 0 }}>
-                  <button
-                    onClick={() => setCallMode("asap")}
-                    style={{
-                      flex: 1, padding: "0.55rem 0.5rem",
-                      borderRadius: 8, border: "2px solid",
-                      borderColor: callMode === "asap" ? "#2563EB" : "#D1D5DB",
-                      background: callMode === "asap" ? "#EFF6FF" : "#fff",
-                      color: callMode === "asap" ? "#2563EB" : "#374151",
-                      fontFamily: "Inter, sans-serif", fontSize: "0.78rem",
-                      fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
-                    }}
-                  >
+                {/* Flex-контейнер кнопок: overflow:hidden предотвращает выход за пределы */}
+                <div style={{ display: "flex", gap: 8, overflow: "hidden" }}>
+                  <button onClick={() => setCallMode("asap")} style={modeBtn(callMode === "asap")}>
                     Как можно скорее
                   </button>
-                  <button
-                    onClick={() => setCallMode("custom")}
-                    style={{
-                      flex: 1, padding: "0.55rem 0.5rem",
-                      borderRadius: 8, border: "2px solid",
-                      borderColor: callMode === "custom" ? "#2563EB" : "#D1D5DB",
-                      background: callMode === "custom" ? "#EFF6FF" : "#fff",
-                      color: callMode === "custom" ? "#2563EB" : "#374151",
-                      fontFamily: "Inter, sans-serif", fontSize: "0.78rem",
-                      fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
-                    }}
-                  >
+                  <button onClick={() => setCallMode("custom")} style={modeBtn(callMode === "custom")}>
                     Выбрать время
                   </button>
                 </div>
 
                 {callMode === "custom" && (
                   <div style={{
-                    border: "2px solid #2563EB", borderRadius: 10,
-                    background: "#EFF6FF", padding: "0.85rem 1rem",
-                    marginTop: 2,
+                    border: "2px solid #2563EB",
+                    borderRadius: 10,
+                    background: "#EFF6FF",
+                    padding: "0.85rem 0.75rem",
+                    marginTop: 8,
+                    boxSizing: "border-box",
                   }}>
                     <div style={{
                       fontFamily: "Inter, sans-serif", fontSize: "0.78rem",
@@ -248,7 +302,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                       <Icon name="Clock" size={14} />
                       Выберите удобное время звонка
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <select
                         value={callHour}
                         onChange={(e) => setCallHour(e.target.value)}
@@ -258,7 +312,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                           <option key={h} value={String(h)}>{String(h).padStart(2, "0")}</option>
                         ))}
                       </select>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.2rem", color: "#374151" }}>:</span>
+                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#374151", flexShrink: 0 }}>:</span>
                       <select
                         value={callMin}
                         onChange={(e) => setCallMin(e.target.value)}
@@ -268,8 +322,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                           <option key={m} value={String(m)}>{String(m).padStart(2, "0")}</option>
                         ))}
                       </select>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.8rem", color: "#6B7280", whiteSpace: "nowrap" }}>
-                        (с 09:00 до 21:00)
+                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", color: "#6B7280", flexShrink: 0, whiteSpace: "nowrap" }}>
+                        09–21
                       </span>
                     </div>
                   </div>
@@ -287,6 +341,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                   value={captchaInput}
                   onChange={(e) => setCaptchaInput(e.target.value)}
                   type="number"
+                  inputMode="numeric"
                 />
               </div>
 
@@ -303,9 +358,12 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                   background: canSubmit ? "#2563EB" : "#D1D5DB",
                   color: canSubmit ? "#fff" : "#9CA3AF",
                   border: "none", borderRadius: 8,
-                  padding: "0.75rem", width: "100%",
+                  padding: "0.75rem",
+                  width: "100%",
+                  boxSizing: "border-box",
                   fontFamily: "Inter, sans-serif", fontWeight: 700,
-                  fontSize: "0.9rem", cursor: canSubmit ? "pointer" : "not-allowed",
+                  fontSize: "0.9rem",
+                  cursor: canSubmit ? "pointer" : "not-allowed",
                   transition: "background 0.2s, color 0.2s",
                   marginTop: 4,
                 }}
