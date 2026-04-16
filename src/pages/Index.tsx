@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import Icon from "@/components/ui/icon";
+import LeadModal from "@/components/LeadModal";
 
 // ─── Данные 12 объектов ───────────────────────────────────────────────────────
 
@@ -206,10 +207,11 @@ const SALE_STARTS: SaleStart[] = [
 
 // ─── Карточка старта продаж ───────────────────────────────────────────────────
 
-function SaleStartCard({ item }: { item: SaleStart }) {
+function SaleStartCard({ item, onLead }: { item: SaleStart; onLead?: (src: string) => void }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
+      onClick={() => onLead && onLead(item.name)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -299,7 +301,7 @@ function SaleStartCard({ item }: { item: SaleStart }) {
 
 // ─── Секция Старты продаж ─────────────────────────────────────────────────────
 
-function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
+function SaleStartsSection({ setPage, onLead }: { setPage: (p: string) => void; onLead?: (src: string) => void }) {
   const [sliderPage, setSliderPage] = useState(0);
   const [fading, setFading] = useState(false);
   const [mobExpanded, setMobExpanded] = useState(false);
@@ -352,7 +354,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
             display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "1.5rem",
             opacity: fading ? 0 : 1, transition: "opacity 0.22s ease",
           }}>
-            {visible.map(item => <SaleStartCard key={item.id} item={item} />)}
+            {visible.map(item => <SaleStartCard key={item.id} item={item} onLead={onLead} />)}
           </div>
           {sliderPage < totalPages - 1 && (
             <button onClick={() => goTo(sliderPage + 1)} style={{ ...btnStyle, right: 0 }}>
@@ -375,7 +377,7 @@ function SaleStartsSection({ setPage }: { setPage: (p: string) => void }) {
         {/* Мобильный: вертикальный список + кнопки раскрытия/свёртки */}
         <div className="sale-starts-mobile" style={{ display: "none", flexDirection: "column", gap: "0.75rem", padding: "0 1rem" }}>
           {mobVisible.map(item => (
-            <SaleStartCard key={item.id} item={item} />
+            <SaleStartCard key={item.id} item={item} onLead={onLead} />
           ))}
           {!mobExpanded && SALE_STARTS.length > 3 && (
             <button onClick={() => setMobExpanded(true)} style={{
@@ -433,10 +435,11 @@ function ProjectAvatar({ id, img, size = 48 }: { id: number; img?: string; size?
 
 // ─── Компактная карточка анонса ───────────────────────────────────────────────
 
-function LaunchCard({ item, setPage }: { item: Launch; setPage?: (p: string) => void }) {
+function LaunchCard({ item, setPage, onLead }: { item: Launch; setPage?: (p: string) => void; onLead?: (src: string) => void }) {
   const title = item.developer ? `${item.developer} - ${item.name}` : item.name;
 
   const handleClick = () => {
+    if (onLead) { onLead(item.name); return; }
     if (item.internalPage && setPage) {
       setPage(item.internalPage);
       window.scrollTo({ top: 0 });
@@ -645,7 +648,7 @@ function Hero({ onSearch }: { onSearch: () => void }) {
 
 // ─── Секция анонсов ───────────────────────────────────────────────────────────
 
-function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) => void; showAll?: boolean }) {
+function LaunchesSection({ setPage, showAll = false, onLead }: { setPage: (p: string) => void; showAll?: boolean; onLead?: (src: string) => void }) {
   const [expanded, setExpanded] = useState(false);
   const [mobExpanded, setMobExpanded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -688,12 +691,12 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
 
       {/* Десктоп: сетка */}
       <div className="launches-grid launches-desktop">
-        {visible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
+        {visible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} onLead={onLead} />)}
       </div>
 
       {/* Мобильный: список */}
       <div className="launches-mobile" style={{ display: "none", flexDirection: "column", gap: "0.75rem" }}>
-        {mobVisible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} />)}
+        {mobVisible.map(item => <LaunchCard key={item.id} item={item} setPage={setPage} onLead={onLead} />)}
         {!showAll && !mobExpanded && LAUNCHES.length > 3 && (
           <button onClick={() => setMobExpanded(true)} style={{
             background: "#fff", border: "1px solid #D1D5DB", borderRadius: 8,
@@ -724,7 +727,7 @@ function LaunchesSection({ setPage, showAll = false }: { setPage: (p: string) =>
 
 // ─── NavBar ───────────────────────────────────────────────────────────────────
 
-function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void }) {
+function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) => void; onLead: () => void }) {
   const [mob, setMob] = useState(false);
   const links = [
     { id: "home",         label: "Главная"          },
@@ -767,11 +770,11 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
         </div>
 
         <div className="nav-right" style={{ marginLeft: "auto" }}>
-          <a href="tel:+74951234567" style={{ display: "flex", alignItems: "center", gap: 5, textDecoration: "none", color: "#111827", fontWeight: 600, fontSize: "0.88rem", fontFamily: "Inter, sans-serif" }}>
+          <a href="tel:+74999612341" style={{ display: "flex", alignItems: "center", gap: 5, textDecoration: "none", color: "#111827", fontWeight: 600, fontSize: "0.88rem", fontFamily: "Inter, sans-serif" }}>
             <Icon name="Phone" size={14} style={{ color: "#2563EB" }} />
-            +7 (495) 123-45-67
+            +7 (499) 961-23-41
           </a>
-          <button onClick={() => go("contact")} style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0.45rem 1.1rem", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "Inter, sans-serif" }}>
+          <button onClick={onLead} style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0.45rem 1.1rem", fontWeight: 600, fontSize: "0.8rem", cursor: "pointer", fontFamily: "Inter, sans-serif" }}>
             Подобрать
           </button>
         </div>
@@ -796,17 +799,17 @@ function NavBar({ page, setPage }: { page: string; setPage: (p: string) => void 
 
 // ─── Страница: Главная ────────────────────────────────────────────────────────
 
-function HomePage({ setPage }: { setPage: (p: string) => void }) {
+function HomePage({ setPage, onLead }: { setPage: (p: string) => void; onLead: () => void }) {
   const go = (p: string) => { setPage(p); window.scrollTo({ top: 0 }); };
   return (
     <div>
       <Hero onSearch={() => go("catalog")} />
 
       <div style={{ borderTop: "1px solid #E8EBF0" }}>
-        <LaunchesSection setPage={setPage} showAll={false} />
+        <LaunchesSection setPage={setPage} showAll={false} onLead={onLead} />
       </div>
 
-      <SaleStartsSection setPage={setPage} />
+      <SaleStartsSection setPage={setPage} onLead={onLead} />
 
       {/* Преимущества */}
       <div style={{ background: "#F5F7FB", borderTop: "1px solid #E8EBF0" }}>
@@ -837,7 +840,7 @@ function HomePage({ setPage }: { setPage: (p: string) => void }) {
       <div style={{ background: "#2563EB", padding: "3rem clamp(1rem,5vw,4rem)", textAlign: "center" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.5rem", color: "#fff", marginBottom: "0.5rem" }}>Нужна помощь с выбором?</h2>
         <p style={{ color: "#BFDBFE", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Эксперт перезвонит в течение 15 минут</p>
-        <button onClick={() => go("contact")} style={{ background: "#fff", color: "#2563EB", border: "none", borderRadius: 8, padding: "0.65rem 1.75rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
+        <button onClick={onLead} style={{ background: "#fff", color: "#2563EB", border: "none", borderRadius: 8, padding: "0.65rem 1.75rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
           Получить консультацию бесплатно
         </button>
       </div>
@@ -926,7 +929,7 @@ function CatalogPage() {
 
 // ─── Страница: Все старты продаж ──────────────────────────────────────────────
 
-function SaleStartsPage({ setPage }: { setPage: (p: string) => void }) {
+function SaleStartsPage({ setPage, onLead }: { setPage: (p: string) => void; onLead?: (src: string) => void }) {
   return (
     <div style={{ background: "#F5F7FB", minHeight: "100vh" }}>
       <div style={{ padding: "1.5rem clamp(1rem,5vw,4rem) 0", display: "flex", alignItems: "center", gap: 6 }}>
@@ -941,7 +944,7 @@ function SaleStartsPage({ setPage }: { setPage: (p: string) => void }) {
           Все старты продаж — {SALE_STARTS.length} объектов
         </h1>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.25rem" }}>
-          {SALE_STARTS.map(item => <SaleStartCard key={item.id} item={item} />)}
+          {SALE_STARTS.map(item => <SaleStartCard key={item.id} item={item} onLead={onLead} />)}
         </div>
       </div>
     </div>
@@ -950,7 +953,7 @@ function SaleStartsPage({ setPage }: { setPage: (p: string) => void }) {
 
 // ─── Страница: Все анонсы ─────────────────────────────────────────────────────
 
-function LaunchesPage({ setPage }: { setPage: (p: string) => void }) {
+function LaunchesPage({ setPage, onLead }: { setPage: (p: string) => void; onLead?: (src: string) => void }) {
   return (
     <div style={{ background: "#F5F7FB", minHeight: "100vh" }}>
       <div style={{ padding: "1.5rem clamp(1rem,5vw,4rem) 0", display: "flex", alignItems: "center", gap: 6 }}>
@@ -961,7 +964,7 @@ function LaunchesPage({ setPage }: { setPage: (p: string) => void }) {
         <span style={{ color: "#374151", fontSize: "0.82rem", fontFamily: "Inter, sans-serif" }}>Анонсы стартов продаж</span>
       </div>
       <div style={{ padding: "0 clamp(1rem,5vw,4rem)" }}>
-        <LaunchesSection setPage={setPage} showAll />
+        <LaunchesSection setPage={setPage} showAll onLead={onLead} />
       </div>
     </div>
   );
@@ -1321,19 +1324,25 @@ function Footer({ setPage }: { setPage: (p: string) => void }) {
 
 export default function Index() {
   const [page, setPage] = useState("home");
+  const [leadOpen, setLeadOpen] = useState(false);
+  const [leadSource, setLeadSource] = useState("");
+
+  const openLead = (src = "") => { setLeadSource(src); setLeadOpen(true); };
+
   return (
     <div style={{ fontFamily: "Inter, sans-serif", minHeight: "100vh", background: "#ECF0F7" }}>
-      <NavBar page={page} setPage={setPage} />
+      <NavBar page={page} setPage={setPage} onLead={() => openLead("Кнопка Подобрать")} />
       <div style={{ paddingTop: 56 }}>
-        {page === "home"            && <HomePage          setPage={setPage} />}
+        {page === "home"            && <HomePage          setPage={setPage} onLead={openLead} />}
         {page === "catalog"         && <CatalogPage       />}
-        {page === "launches"        && <LaunchesPage      setPage={setPage} />}
-        {page === "sale-starts"     && <SaleStartsPage    setPage={setPage} />}
+        {page === "launches"        && <LaunchesPage      setPage={setPage} onLead={openLead} />}
+        {page === "sale-starts"     && <SaleStartsPage    setPage={setPage} onLead={openLead} />}
         {page === "developers"      && <DevelopersPage    />}
         {page === "contact"         && <ContactPage       />}
         {page === "project-aurum"   && <ProjectAurumPage  setPage={setPage} />}
         <Footer setPage={setPage} />
       </div>
+      <LeadModal open={leadOpen} onClose={() => setLeadOpen(false)} source={leadSource} />
     </div>
   );
 }
