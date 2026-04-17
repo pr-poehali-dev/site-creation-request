@@ -64,10 +64,12 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     setLoading(true);
     setError("");
     try {
+      const payload = JSON.stringify({ name: name.trim(), phone: phone.trim(), callTime: "Как можно скорее", source });
+      // text/plain не вызывает preflight OPTIONS — обходит CORS на preview-домене
       const res = await fetch(SEND_LEAD_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), callTime: "Как можно скорее", source }),
+        headers: { "Content-Type": "text/plain" },
+        body: payload,
       });
       let data: { ok?: boolean; error?: string } = {};
       try {
