@@ -2,15 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
 const SEND_LEAD_URL = "https://functions.poehali.dev/9cf5e35e-11a2-4c0b-9b02-347ea38ec4c8";
-
-function generateCaptcha() {
-  const a = Math.floor(Math.random() * 9) + 1;
-  const b = Math.floor(Math.random() * 9) + 1;
-  return { a, b, answer: a + b };
-}
-
-const HOURS = Array.from({ length: 13 }, (_, i) => i + 9);
-const MINUTES = [0, 10, 20, 30, 40, 50];
+const CONFIRM_CODE = "3462";
 
 interface LeadModalProps {
   open: boolean;
@@ -21,11 +13,7 @@ interface LeadModalProps {
 export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [callMode, setCallMode] = useState<"asap" | "custom">("asap");
-  const [callHour, setCallHour] = useState("9");
-  const [callMin, setCallMin] = useState("0");
-  const [captcha, setCaptcha] = useState(generateCaptcha);
-  const [captchaInput, setCaptchaInput] = useState("");
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -34,75 +22,73 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
 
   useEffect(() => {
     if (open) {
-      setCaptcha(generateCaptcha());
-      setCaptchaInput("");
       setName("");
       setPhone("");
-      setCallMode("asap");
-      setCallHour("9");
-      setCallMin("0");
+      setCode("");
       setSent(false);
       setError("");
     }
   }, [open]);
 
-  // Блокировка body-скролла без position:fixed (избегаем iOS-глюков)
   useEffect(() => {
     if (!open) return;
-
     scrollYRef.current = window.scrollY;
-
-    // Единственный надёжный способ на iOS без смещения layout:
-    // touch-action на body + overflow hidden на html
     const html = document.documentElement;
     const body = document.body;
-
     const prevHtmlOverflow = html.style.overflow;
     const prevBodyOverflow = body.style.overflow;
     const prevBodyWidth = body.style.width;
-
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
-    // Фиксируем ширину body явно, чтобы не схлопнулась при скрытии скроллбара
     body.style.width = "100%";
-
     const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", onKey);
-
     return () => {
       document.removeEventListener("keydown", onKey);
       html.style.overflow = prevHtmlOverflow;
       body.style.overflow = prevBodyOverflow;
       body.style.width = prevBodyWidth;
-      // Восстанавливаем позицию скролла
       window.scrollTo({ top: scrollYRef.current, behavior: "instant" as ScrollBehavior });
     };
   }, [open, onClose]);
 
-  const captchaOk = parseInt(captchaInput, 10) === captcha.answer;
-  const canSubmit = !!(name.trim() && phone.trim() && captchaOk && !loading);
+  const codeOk = code.trim() === CONFIRM_CODE;
+  const canSubmit = !!(name.trim() && phone.trim() && codeOk && !loading);
 
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    if (!name.trim() || !phone.trim()) return;
+    if (!codeOk) {
+      setError("Неверный код подтверждения");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
-      const h = String(callHour).padStart(2, "0");
-      const m = String(callMin).padStart(2, "0");
-      const callTimeValue = callMode === "asap" ? "Как можно скорее" : `${h}:${m}`;
       const res = await fetch(SEND_LEAD_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, callTime: callTimeValue, source }),
+        body: JSON.stringify({ name: name.trim(), phone: phone.trim(), callTime: "Как можно скорее", source }),
       });
-      const data = await res.json();
+      let data: { ok?: boolean; error?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        // тело не распарсилось — считаем успехом если статус 2xx
+        if (res.ok) {
+          data = { ok: true };
+        }
+      }
       if (data.ok) {
         setSent(true);
+        // Цель Яндекс.Метрики — только после успешной отправки
+        type YmFn = (id: number, action: string, goal: string) => void;
+        const w = window as Window & { ym?: YmFn };
+        if (w.ym) w.ym(108595408, "reachGoal", "form_submit");
       } else {
-        setError("Ошибка отправки. Попробуйте ещё раз.");
+        setError(data.error || "Ошибка отправки. Попробуйте ещё раз.");
       }
-    } catch {
-      setError("Ошибка соединения. Попробуйте ещё раз.");
+    } catch (e) {
+      setError("Ошибка соединения. Проверьте интернет и попробуйте ещё раз.");
     } finally {
       setLoading(false);
     }
@@ -111,15 +97,13 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   if (!open) return null;
 
   const inp: React.CSSProperties = {
-    // width: 100% + box-sizing гарантируют что input не вылезет за padding родителя
     width: "100%",
     boxSizing: "border-box",
-    minWidth: 0, // сброс дефолтного min-width у input
+    minWidth: 0,
     border: "1px solid #D1D5DB",
     borderRadius: 8,
     padding: "0.6rem 0.85rem",
     fontFamily: "Inter, sans-serif",
-    // 16px минимум — предотвращает zoom на iOS при фокусе
     fontSize: "16px",
     color: "#111827",
     outline: "none",
@@ -137,45 +121,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     display: "block",
   };
 
-  const selectStyle: React.CSSProperties = {
-    flex: "1 1 0",
-    minWidth: 0,
-    border: "1px solid #D1D5DB",
-    borderRadius: 8,
-    padding: "0.6rem 0.25rem",
-    fontFamily: "Inter, sans-serif",
-    fontSize: "16px",
-    color: "#111827",
-    outline: "none",
-    background: "#fff",
-    textAlign: "center",
-    cursor: "pointer",
-    boxSizing: "border-box",
-    width: "100%",
-  };
-
-  const modeBtn = (active: boolean): React.CSSProperties => ({
-    flex: "1 1 0",
-    minWidth: 0, // критично: без этого flex-кнопки не сжимаются
-    padding: "0.55rem 0.25rem",
-    borderRadius: 8,
-    border: "2px solid",
-    borderColor: active ? "#2563EB" : "#D1D5DB",
-    background: active ? "#EFF6FF" : "#fff",
-    color: active ? "#2563EB" : "#374151",
-    fontFamily: "Inter, sans-serif",
-    fontSize: "0.75rem",
-    fontWeight: 600,
-    cursor: "pointer",
-    transition: "all 0.15s",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    boxSizing: "border-box",
-  });
-
   return (
-    // Оверлей: position:fixed inset:0 — не добавляем ширину сверх viewport
     <div
       ref={overlayRef}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
@@ -184,37 +130,29 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
         top: 0, left: 0, right: 0, bottom: 0,
         zIndex: 1000,
         background: "rgba(0,0,0,0.5)",
-        // НЕ используем backdropFilter — он создаёт stacking context и глючит на iOS
         overflowY: "auto",
         overflowX: "hidden",
-        // Центрируем через padding вместо flex — flex на iOS иногда считает ширину неверно
         padding: "1rem 0",
         boxSizing: "border-box",
       }}
     >
-      {/* Внутренний контейнер: явная ширина через margin+padding, не через flex */}
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 16,
-          // margin auto + width = надёжнее чем flex-центрирование на iOS
-          width: "92%",
-          maxWidth: 420,
-          margin: "0 auto",
-          padding: "1.5rem",
-          position: "relative",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-          boxSizing: "border-box",
-          // НЕ ставим overflowY:auto здесь — это вызывает баг с клавиатурой на iOS
-        }}
-      >
+      <div style={{
+        background: "#fff",
+        borderRadius: 16,
+        width: "92%",
+        maxWidth: 420,
+        margin: "0 auto",
+        padding: "1.5rem",
+        position: "relative",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+        boxSizing: "border-box",
+      }}>
         <button
           onClick={onClose}
           style={{
             position: "absolute", top: 12, right: 12,
             background: "none", border: "none", cursor: "pointer",
-            padding: 6, borderRadius: 6, color: "#9CA3AF",
-            lineHeight: 0,
+            padding: 6, borderRadius: 6, color: "#9CA3AF", lineHeight: 0,
           }}
         >
           <Icon name="X" size={18} />
@@ -243,9 +181,9 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
             <div style={{
               fontFamily: "Inter, sans-serif", fontWeight: 700,
               fontSize: "1.1rem", color: "#111827", marginBottom: "1.25rem",
-              paddingRight: "1.5rem", // место под кнопку закрытия
+              paddingRight: "1.5rem",
             }}>
-              Оставить заявку
+              Получить консультацию бесплатно
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
@@ -273,76 +211,63 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                 />
               </div>
 
-              <div>
-                <label style={labelStyle}>Когда перезвонить</label>
-                {/* Flex-контейнер кнопок: overflow:hidden предотвращает выход за пределы */}
-                <div style={{ display: "flex", gap: 8, overflow: "hidden" }}>
-                  <button onClick={() => setCallMode("asap")} style={modeBtn(callMode === "asap")}>
-                    Как можно скорее
-                  </button>
-                  <button onClick={() => setCallMode("custom")} style={modeBtn(callMode === "custom")}>
-                    Выбрать время
-                  </button>
-                </div>
-
-                {callMode === "custom" && (
-                  <div style={{
-                    border: "2px solid #2563EB",
-                    borderRadius: 10,
-                    background: "#EFF6FF",
-                    padding: "0.85rem 0.75rem",
-                    marginTop: 8,
-                    boxSizing: "border-box",
+              {/* Блок получения кода */}
+              <div style={{
+                background: "#FFF7ED",
+                border: "1px solid #FED7AA",
+                borderRadius: 10,
+                padding: "0.85rem 1rem",
+              }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8, marginBottom: 6 }}>
+                  <Icon name="Phone" size={16} style={{ color: "#EA580C", flexShrink: 0, marginTop: 2 }} />
+                  <p style={{
+                    fontFamily: "Inter, sans-serif",
+                    fontSize: "0.82rem",
+                    color: "#92400E",
+                    margin: 0,
+                    lineHeight: "1.4",
                   }}>
-                    <div style={{
-                      fontFamily: "Inter, sans-serif", fontSize: "0.78rem",
-                      fontWeight: 600, color: "#2563EB", marginBottom: 10,
-                      display: "flex", alignItems: "center", gap: 6,
-                    }}>
-                      <Icon name="Clock" size={14} />
-                      Выберите удобное время звонка
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                      <select
-                        value={callHour}
-                        onChange={(e) => setCallHour(e.target.value)}
-                        style={selectStyle}
-                      >
-                        {HOURS.map(h => (
-                          <option key={h} value={String(h)}>{String(h).padStart(2, "0")}</option>
-                        ))}
-                      </select>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#374151", flexShrink: 0 }}>:</span>
-                      <select
-                        value={callMin}
-                        onChange={(e) => setCallMin(e.target.value)}
-                        style={selectStyle}
-                      >
-                        {MINUTES.map(m => (
-                          <option key={m} value={String(m)}>{String(m).padStart(2, "0")}</option>
-                        ))}
-                      </select>
-                      <span style={{ fontFamily: "Inter, sans-serif", fontSize: "0.72rem", color: "#6B7280", flexShrink: 0, whiteSpace: "nowrap" }}>
-                        09–21
-                      </span>
-                    </div>
-                  </div>
-                )}
+                    Чтобы получить код подтверждения, позвоните по номеру{" "}
+                    <a
+                      href="tel:+74999612341"
+                      style={{
+                        color: "#EA580C",
+                        fontWeight: 700,
+                        textDecoration: "none",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      +7 (499) 961-23-41
+                    </a>
+                    . Робот продиктует код.
+                  </p>
+                </div>
               </div>
 
               <div>
-                <label style={labelStyle}>Подтверждение: {captcha.a} + {captcha.b} = ?</label>
+                <label style={labelStyle}>Код подтверждения</label>
                 <input
                   style={{
                     ...inp,
-                    borderColor: captchaInput && !captchaOk ? "#EF4444" : captchaInput && captchaOk ? "#22C55E" : "#D1D5DB",
+                    borderColor: code && !codeOk ? "#EF4444" : code && codeOk ? "#22C55E" : "#D1D5DB",
+                    letterSpacing: "0.15em",
                   }}
-                  placeholder="Введите ответ"
-                  value={captchaInput}
-                  onChange={(e) => setCaptchaInput(e.target.value)}
-                  type="number"
+                  placeholder="Введите код"
+                  value={code}
+                  onChange={(e) => {
+                    setCode(e.target.value);
+                    setError("");
+                  }}
+                  type="text"
                   inputMode="numeric"
+                  maxLength={6}
+                  autoComplete="off"
                 />
+                {code && !codeOk && (
+                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#EF4444", margin: "4px 0 0" }}>
+                    Неверный код подтверждения
+                  </p>
+                )}
               </div>
 
               {error && (
