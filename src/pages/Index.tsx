@@ -838,7 +838,7 @@ function NavBar({ page, setPage, onLead }: { page: string; setPage: (p: string) 
 
 // ─── Страница: Главная ────────────────────────────────────────────────────────
 
-function HomePage({ setPage, onLead }: { setPage: (p: string) => void; onLead: () => void }) {
+function HomePage({ setPage, onLead }: { setPage: (p: string) => void; onLead: (src?: string) => void }) {
   const go = (p: string) => { setPage(p); window.scrollTo({ top: 0 }); };
   return (
     <div>
@@ -879,7 +879,7 @@ function HomePage({ setPage, onLead }: { setPage: (p: string) => void; onLead: (
       <div style={{ background: "#2563EB", padding: "3rem clamp(1rem,5vw,4rem)", textAlign: "center" }}>
         <h2 style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.5rem", color: "#fff", marginBottom: "0.5rem" }}>Нужна помощь с выбором?</h2>
         <p style={{ color: "#BFDBFE", fontSize: "0.9rem", marginBottom: "1.5rem" }}>Эксперт перезвонит в течение 15 минут</p>
-        <button onClick={onLead} style={{ background: "#fff", color: "#2563EB", border: "none", borderRadius: 8, padding: "0.65rem 1.75rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
+        <button onClick={() => onLead("Получить консультацию бесплатно")} style={{ background: "#fff", color: "#2563EB", border: "none", borderRadius: 8, padding: "0.65rem 1.75rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
           Получить консультацию бесплатно
         </button>
       </div>

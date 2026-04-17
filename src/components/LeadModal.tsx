@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
 const SEND_LEAD_URL = "https://functions.poehali.dev/9cf5e35e-11a2-4c0b-9b02-347ea38ec4c8";
-const CONFIRM_CODE = "3462";
 
 interface LeadModalProps {
   open: boolean;
@@ -13,7 +12,6 @@ interface LeadModalProps {
 export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -24,7 +22,6 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     if (open) {
       setName("");
       setPhone("");
-      setCode("");
       setSent(false);
       setError("");
     }
@@ -52,15 +49,10 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     };
   }, [open, onClose]);
 
-  const codeOk = code.trim() === CONFIRM_CODE;
-  const canSubmit = !!(name.trim() && phone.trim() && codeOk && !loading);
+  const canSubmit = !!(name.trim() && phone.trim() && !loading);
 
   const handleSubmit = async () => {
-    if (!name.trim() || !phone.trim()) return;
-    if (!codeOk) {
-      setError("Неверный код подтверждения");
-      return;
-    }
+    if (!canSubmit) return;
     setLoading(true);
     setError("");
     try {
@@ -161,41 +153,6 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
                 <input style={inp} placeholder="+7 (___) ___-__-__" value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel" autoComplete="tel" inputMode="tel" />
-              </div>
-
-              <div style={{
-                background: "#FFF7ED", border: "1px solid #FED7AA",
-                borderRadius: 10, padding: "0.85rem 1rem",
-              }}>
-                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
-                  <Icon name="Phone" size={16} style={{ color: "#EA580C", flexShrink: 0, marginTop: 2 }} />
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#92400E", margin: 0, lineHeight: "1.4" }}>
-                    Чтобы получить код подтверждения, позвоните по номеру{" "}
-                    <a href="tel:+74999612341" style={{ color: "#EA580C", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
-                      +7 (499) 961-23-41
-                    </a>. Робот продиктует код.
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <label style={labelStyle}>Код подтверждения</label>
-                <input
-                  style={{
-                    ...inp,
-                    borderColor: code && !codeOk ? "#EF4444" : code && codeOk ? "#22C55E" : "#D1D5DB",
-                    letterSpacing: "0.15em",
-                  }}
-                  placeholder="Введите код"
-                  value={code}
-                  onChange={(e) => { setCode(e.target.value); setError(""); }}
-                  type="text" inputMode="numeric" maxLength={6} autoComplete="off"
-                />
-                {code && !codeOk && (
-                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#EF4444", margin: "4px 0 0" }}>
-                    Неверный код подтверждения
-                  </p>
-                )}
               </div>
 
               {error && (
