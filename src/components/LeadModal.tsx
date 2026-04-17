@@ -88,6 +88,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
         setError(data.error || "Ошибка отправки. Попробуйте ещё раз.");
       }
     } catch (e) {
+      console.error("[LeadModal] fetch error:", e);
       setError("Ошибка соединения. Проверьте интернет и попробуйте ещё раз.");
     } finally {
       setLoading(false);
