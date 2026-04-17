@@ -1034,12 +1034,47 @@ function DevelopersPage() {
 
 // ─── Страница: Контакты ───────────────────────────────────────────────────────
 
+const SEND_LEAD_URL = "https://functions.poehali.dev/9cf5e35e-11a2-4c0b-9b02-347ea38ec4c8";
+
 function ContactPage() {
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [submitError, setSubmitError] = useState("");
   const [form, setForm] = useState({ name: "", phone: "", email: "", budget: "", message: "" });
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
-  const inp = { border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.6rem 0.85rem", fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "#374151", outline: "none", width: "100%", background: "#fff" };
+  const inp = { border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.6rem 0.85rem", fontFamily: "Inter, sans-serif", fontSize: "16px", color: "#374151", outline: "none", width: "100%", background: "#fff", boxSizing: "border-box" as const };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim()) return;
+    setLoading(true);
+    setSubmitError("");
+    try {
+      const parts = [`Бюджет: ${form.budget || "не указан"}`];
+      if (form.email) parts.push(`Email: ${form.email}`);
+      if (form.message) parts.push(`Сообщение: ${form.message}`);
+      const res = await fetch(SEND_LEAD_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: form.name.trim(), phone: form.phone.trim(), callTime: parts.join(", "), source: "Контакты" }),
+      });
+      let data: { ok?: boolean; error?: string } = {};
+      try { data = await res.json(); } catch { if (res.ok) data = { ok: true }; }
+      if (data.ok) {
+        setSent(true);
+        type YmFn = (id: number, action: string, goal: string) => void;
+        const w = window as Window & { ym?: YmFn };
+        if (w.ym) w.ym(108595408, "reachGoal", "form_submit");
+      } else {
+        setSubmitError(data.error || "Ошибка отправки. Попробуйте ещё раз.");
+      }
+    } catch {
+      setSubmitError("Ошибка отправки. Попробуйте ещё раз.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div style={{ padding: "2.5rem clamp(1rem,5vw,4rem)", background: "#F5F7FB", minHeight: "100vh" }}>
@@ -1058,7 +1093,7 @@ function ContactPage() {
               <button onClick={() => setSent(false)} style={{ marginTop: "1.25rem", background: "none", border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.5rem 1.25rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", cursor: "pointer" }}>Ещё раз</button>
             </div>
           ) : (
-            <form onSubmit={e => { e.preventDefault(); setSent(true); }} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
+            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
               {[
                 { k: "name"  as const, l: "Имя",      t: "text",  ph: "Ваше имя"            },
                 { k: "phone" as const, l: "Телефон",   t: "tel",   ph: "+7 (___) ___-__-__"  },
@@ -1080,15 +1115,15 @@ function ContactPage() {
                 <label style={{ fontSize: "0.76rem", fontWeight: 500, color: "#6B7280", display: "block", marginBottom: "0.3rem" }}>Сообщение</label>
                 <textarea placeholder="Расскажите о пожеланиях..." rows={3} style={{ ...inp, resize: "vertical" }} value={form.message} onChange={set("message")} />
               </div>
-              <button type="submit" style={{ background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0.65rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer", width: "100%" }}>
-                Отправить заявку
+              {submitError && <p style={{ color: "#EF4444", fontSize: "0.8rem", margin: 0 }}>{submitError}</p>}
+              <button type="submit" disabled={loading} style={{ background: loading ? "#D1D5DB" : "#2563EB", color: loading ? "#9CA3AF" : "#fff", border: "none", borderRadius: 8, padding: "0.65rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: loading ? "not-allowed" : "pointer", width: "100%" }}>
+                {loading ? "Отправляем..." : "Отправить заявку"}
               </button>
-
             </form>
           )}
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-  
+
         </div>
       </div>
     </div>
