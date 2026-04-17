@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import Icon from "@/components/ui/icon";
 
 const SEND_LEAD_URL = "https://functions.poehali.dev/9cf5e35e-11a2-4c0b-9b02-347ea38ec4c8";
+const CONFIRM_CODE = "3462";
 
 interface LeadModalProps {
   open: boolean;
@@ -12,6 +13,7 @@ interface LeadModalProps {
 export default function LeadModal({ open, onClose, source }: LeadModalProps) {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -20,10 +22,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
 
   useEffect(() => {
     if (open) {
-      setName("");
-      setPhone("");
-      setSent(false);
-      setError("");
+      setName(""); setPhone(""); setCode("");
+      setSent(false); setError("");
     }
   }, [open]);
 
@@ -32,9 +32,9 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     scrollYRef.current = window.scrollY;
     const html = document.documentElement;
     const body = document.body;
-    const prevHtmlOverflow = html.style.overflow;
-    const prevBodyOverflow = body.style.overflow;
-    const prevBodyWidth = body.style.width;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    const prevWidth = body.style.width;
     html.style.overflow = "hidden";
     body.style.overflow = "hidden";
     body.style.width = "100%";
@@ -42,17 +42,19 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      html.style.overflow = prevHtmlOverflow;
-      body.style.overflow = prevBodyOverflow;
-      body.style.width = prevBodyWidth;
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+      body.style.width = prevWidth;
       window.scrollTo({ top: scrollYRef.current, behavior: "instant" as ScrollBehavior });
     };
   }, [open, onClose]);
 
-  const canSubmit = !!(name.trim() && phone.trim() && !loading);
+  const codeOk = code.trim() === CONFIRM_CODE;
+  const canSubmit = !!(name.trim() && phone.trim() && codeOk && !loading);
 
   const handleSubmit = async () => {
-    if (!canSubmit) return;
+    if (!name.trim() || !phone.trim()) return;
+    if (!codeOk) { setError("Неверный код подтверждения"); return; }
     setLoading(true);
     setError("");
     try {
@@ -88,7 +90,7 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
     background: "#fff", display: "block", appearance: "none" as const,
   };
 
-  const labelStyle: React.CSSProperties = {
+  const lbl: React.CSSProperties = {
     fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
     fontWeight: 600, color: "#374151", marginBottom: 6, display: "block",
   };
@@ -104,9 +106,8 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
       }}
     >
       <div style={{
-        background: "#fff", borderRadius: 16,
-        width: "92%", maxWidth: 420, margin: "0 auto",
-        padding: "1.5rem", position: "relative",
+        background: "#fff", borderRadius: 16, width: "92%", maxWidth: 420,
+        margin: "0 auto", padding: "1.5rem", position: "relative",
         boxShadow: "0 20px 60px rgba(0,0,0,0.2)", boxSizing: "border-box",
       }}>
         <button onClick={onClose} style={{
@@ -120,58 +121,61 @@ export default function LeadModal({ open, onClose, source }: LeadModalProps) {
         {sent ? (
           <div style={{ textAlign: "center", padding: "1.5rem 0" }}>
             <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>✅</div>
-            <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#111827", marginBottom: 8 }}>
-              Заявка отправлена!
-            </div>
-            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "#6B7280" }}>
-              Мы свяжемся с вами в ближайшее время
-            </div>
-            <button onClick={onClose} style={{
-              marginTop: "1.5rem", background: "#2563EB", color: "#fff",
-              border: "none", borderRadius: 8, padding: "0.65rem 2rem",
-              fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer",
-            }}>Закрыть</button>
+            <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#111827", marginBottom: 8 }}>Заявка отправлена!</div>
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.875rem", color: "#6B7280" }}>Мы свяжемся с вами в ближайшее время</div>
+            <button onClick={onClose} style={{ marginTop: "1.5rem", background: "#2563EB", color: "#fff", border: "none", borderRadius: 8, padding: "0.65rem 2rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>Закрыть</button>
           </div>
         ) : (
           <>
-            <div style={{
-              fontFamily: "Inter, sans-serif", fontWeight: 700,
-              fontSize: "1.1rem", color: "#111827", marginBottom: "1.25rem", paddingRight: "1.5rem",
-            }}>
+            <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#111827", marginBottom: "1.25rem", paddingRight: "1.5rem" }}>
               Оставить заявку
             </div>
-
             <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
               <div>
-                <label style={labelStyle}>Имя</label>
-                <input style={inp} placeholder="Ваше имя" value={name}
-                  onChange={(e) => setName(e.target.value)} autoComplete="name" />
+                <label style={lbl}>Имя</label>
+                <input style={inp} placeholder="Ваше имя" value={name} onChange={e => setName(e.target.value)} autoComplete="name" />
+              </div>
+              <div>
+                <label style={lbl}>Телефон</label>
+                <input style={inp} placeholder="+7 (___) ___-__-__" value={phone} onChange={e => setPhone(e.target.value)} type="tel" autoComplete="tel" inputMode="tel" />
+              </div>
+
+              <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: 10, padding: "0.85rem 1rem" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <Icon name="Phone" size={16} style={{ color: "#EA580C", flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#92400E", margin: 0, lineHeight: "1.4" }}>
+                    Чтобы получить код подтверждения, позвоните по номеру{" "}
+                    <a href="tel:+74999612341" style={{ color: "#EA580C", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      +7 (499) 961-23-41
+                    </a>. Робот продиктует код.
+                  </p>
+                </div>
               </div>
 
               <div>
-                <label style={labelStyle}>Телефон</label>
-                <input style={inp} placeholder="+7 (___) ___-__-__" value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  type="tel" autoComplete="tel" inputMode="tel" />
+                <label style={lbl}>Код подтверждения</label>
+                <input
+                  style={{ ...inp, borderColor: code && !codeOk ? "#EF4444" : code && codeOk ? "#22C55E" : "#D1D5DB", letterSpacing: "0.15em" }}
+                  placeholder="Введите код"
+                  value={code}
+                  onChange={e => { setCode(e.target.value); setError(""); }}
+                  type="text" inputMode="numeric" maxLength={6} autoComplete="off"
+                />
+                {code && !codeOk && (
+                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#EF4444", margin: "4px 0 0" }}>Неверный код</p>
+                )}
               </div>
 
-              {error && (
-                <div style={{ color: "#EF4444", fontFamily: "Inter, sans-serif", fontSize: "0.8rem" }}>{error}</div>
-              )}
+              {error && <div style={{ color: "#EF4444", fontFamily: "Inter, sans-serif", fontSize: "0.8rem" }}>{error}</div>}
 
-              <button
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                style={{
-                  background: canSubmit ? "#2563EB" : "#D1D5DB",
-                  color: canSubmit ? "#fff" : "#9CA3AF",
-                  border: "none", borderRadius: 8, padding: "0.75rem",
-                  width: "100%", boxSizing: "border-box",
-                  fontFamily: "Inter, sans-serif", fontWeight: 700, fontSize: "0.9rem",
-                  cursor: canSubmit ? "pointer" : "not-allowed",
-                  transition: "background 0.2s, color 0.2s", marginTop: 4,
-                }}
-              >
+              <button onClick={handleSubmit} disabled={!canSubmit} style={{
+                background: canSubmit ? "#2563EB" : "#D1D5DB",
+                color: canSubmit ? "#fff" : "#9CA3AF",
+                border: "none", borderRadius: 8, padding: "0.75rem", width: "100%",
+                boxSizing: "border-box", fontFamily: "Inter, sans-serif", fontWeight: 700,
+                fontSize: "0.9rem", cursor: canSubmit ? "pointer" : "not-allowed",
+                transition: "background 0.2s, color 0.2s", marginTop: 4,
+              }}>
                 {loading ? "Отправляем..." : "Отправить"}
               </button>
             </div>

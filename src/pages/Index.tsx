@@ -1036,9 +1036,12 @@ function DevelopersPage() {
 
 const SEND_LEAD_URL = "https://functions.poehali.dev/9cf5e35e-11a2-4c0b-9b02-347ea38ec4c8";
 
+const CONTACT_CODE = "3462";
+
 function ContactPage() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
@@ -1049,11 +1052,13 @@ function ContactPage() {
     fontSize: "16px", color: "#111827", outline: "none", background: "#fff", display: "block",
   };
 
-  const canSubmit = !!(name.trim() && phone.trim() && !loading);
+  const codeOk = code.trim() === CONTACT_CODE;
+  const canSubmit = !!(name.trim() && phone.trim() && codeOk && !loading);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
+    if (!name.trim() || !phone.trim()) return;
+    if (!codeOk) { setError("Неверный код подтверждения"); return; }
     setLoading(true);
     setError("");
     try {
@@ -1093,7 +1098,7 @@ function ContactPage() {
               </div>
               <h3 style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "1rem", marginBottom: "0.35rem" }}>Заявка отправлена!</h3>
               <p style={{ color: "#6B7280", fontSize: "0.82rem" }}>Свяжемся в ближайшее время</p>
-              <button onClick={() => { setSent(false); setName(""); setPhone(""); }} style={{ marginTop: "1.25rem", background: "none", border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.5rem 1.25rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", cursor: "pointer" }}>Ещё раз</button>
+              <button onClick={() => { setSent(false); setName(""); setPhone(""); setCode(""); }} style={{ marginTop: "1.25rem", background: "none", border: "1px solid #D1D5DB", borderRadius: 8, padding: "0.5rem 1.25rem", fontFamily: "Inter, sans-serif", fontSize: "0.82rem", cursor: "pointer" }}>Ещё раз</button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
@@ -1104,6 +1109,28 @@ function ContactPage() {
               <div>
                 <label style={{ fontSize: "0.76rem", fontWeight: 500, color: "#6B7280", display: "block", marginBottom: "0.3rem" }}>Телефон</label>
                 <input type="tel" placeholder="+7 (___) ___-__-__" style={inp} value={phone} onChange={e => setPhone(e.target.value)} autoComplete="tel" inputMode="tel" />
+              </div>
+              <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: 10, padding: "0.85rem 1rem" }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                  <Icon name="Phone" size={16} style={{ color: "#EA580C", flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.82rem", color: "#92400E", margin: 0, lineHeight: "1.4" }}>
+                    Чтобы получить код подтверждения, позвоните по номеру{" "}
+                    <a href="tel:+74999612341" style={{ color: "#EA580C", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+                      +7 (499) 961-23-41
+                    </a>. Робот продиктует код.
+                  </p>
+                </div>
+              </div>
+              <div>
+                <label style={{ fontSize: "0.76rem", fontWeight: 500, color: "#6B7280", display: "block", marginBottom: "0.3rem" }}>Код подтверждения</label>
+                <input
+                  type="text" inputMode="numeric" maxLength={6} autoComplete="off"
+                  placeholder="Введите код"
+                  style={{ ...inp, borderColor: code && !codeOk ? "#EF4444" : code && codeOk ? "#22C55E" : "#D1D5DB", letterSpacing: "0.15em" }}
+                  value={code}
+                  onChange={e => { setCode(e.target.value); setError(""); }}
+                />
+                {code && !codeOk && <p style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#EF4444", margin: "4px 0 0" }}>Неверный код</p>}
               </div>
               {error && <p style={{ color: "#EF4444", fontSize: "0.8rem", margin: 0 }}>{error}</p>}
               <button type="submit" disabled={!canSubmit} style={{ background: canSubmit ? "#2563EB" : "#D1D5DB", color: canSubmit ? "#fff" : "#9CA3AF", border: "none", borderRadius: 8, padding: "0.65rem", fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.875rem", cursor: canSubmit ? "pointer" : "not-allowed", width: "100%" }}>
