@@ -1,6 +1,36 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Icon from "@/components/ui/icon";
 import LeadModal from "@/components/LeadModal";
+
+// ─── Утилита поиска ───────────────────────────────────────────────────────────
+
+type SearchResult = {
+  kind: "launch" | "sale";
+  id: number;
+  name: string;
+  sub: string;
+  img?: string;
+  internalPage?: string;
+  highlight: string;
+};
+
+function buildSearchText(...parts: (string | undefined | null)[]): string {
+  return parts.filter(Boolean).join(" ").toLowerCase();
+}
+
+function HighlightText({ text, query }: { text: string; query: string }) {
+  if (!query.trim()) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi"));
+  return (
+    <>
+      {parts.map((p, i) =>
+        p.toLowerCase() === query.trim().toLowerCase()
+          ? <mark key={i} style={{ background: "#FEF08A", color: "#111827", borderRadius: 2, padding: "0 1px" }}>{p}</mark>
+          : p
+      )}
+    </>
+  );
+}
 
 // ─── Данные 12 объектов ───────────────────────────────────────────────────────
 
@@ -13,21 +43,22 @@ interface Launch {
   url: string;
   img?: string;
   internalPage?: string;
+  searchText: string;
 }
 
 const LAUNCHES: Launch[] = [
-  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                       address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg", internalPage: "project-aurum" },
-  { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                     address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/2.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/49a9383e-fa69-46f1-a618-b4beda50fd1e.jpg" },
-  { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",           deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/3.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/05467dc2-9496-46b9-b7ca-d2b982e53b11.jpg" },
-  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",             address: "улица Мосфильмовская",                  deadline: "май",         url: "https://xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg" },
-  { id: 5,  developer: "Мангазея",          name: "Мангазея на Речном",                address: "Москва",                               deadline: "осень 2026",  url: "https://xn--d1alfcjp.xn--p1ai/5.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b28b6b6f-2dbd-4393-95f1-88529e441bf1.jpg" },
-  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",             address: "д. Измалково, Солнечная ул",            deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/6.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7522e5a5-00cd-4285-9572-ff923a5b251d.jpg" },
-  { id: 7,  developer: "ГК СетьСтрой",     name: "Квартал Светлый 2 оч.",             address: "г. Балашиха, ул Твардовского",          deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/7.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d5d571af-6a7c-405e-b22c-0c739ba77d1b.jpg" },
-  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",               address: "Донской, ул Шаболовка",                deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/8.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f92e8f1b-a945-47c3-9d46-aa1ce75fafb3.png" },
-  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                address: "Большой Палашевский переулок",          deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/9.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56643ce7-a7be-4d71-b2a5-e031833b8901.jpg" },
-  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                     address: "Хорошево-Мневники, ул Нижние Мневники", deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/10.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/1dcd3797-4bb8-445a-bb4b-626aab2a2cbd.jpg" },
-  { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                        address: "г. Химки, ул Рабочая",                 deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/11.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b1395206-2a22-484f-9626-c1afe019ace9.jpg" },
-  { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",    address: "пос. Светлые Горы, Пятницкое шоссе",  deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/12.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/84741645-38d5-4d64-91d8-2d42516b863b.jpg" },
+  { id: 1,  developer: "Град Девелопмент", name: "Аурум Тайм",                         address: "Богородское, проезд 4-й Подбельского",   deadline: "апрель 2026", url: "https://xn--d1alfcjp.xn--p1ai/1.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/a07f8433-bf94-48df-9c7f-e48bb9c78404.jpg", internalPage: "project-aurum", searchText: buildSearchText("Аурум Тайм", "Град Девелопмент", "Богородское", "проезд 4-й Подбельского", "апрель 2026", "анонс") },
+  { id: 2,  developer: "ГК Атлант",        name: "Крекшино Парк",                       address: "Внуково, поселок совхоза Крекшино",      deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/2.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/49a9383e-fa69-46f1-a618-b4beda50fd1e.jpg", searchText: buildSearchText("Крекшино Парк", "ГК Атлант", "Внуково", "поселок совхоза Крекшино", "весна 2026", "анонс") },
+  { id: 3,  developer: "",                  name: "Никольский квартал Отрада, к. 6 и 7", address: "г Красногорск, мкр Опалиха",             deadline: "весна 2026",  url: "https://xn--d1alfcjp.xn--p1ai/3.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/05467dc2-9496-46b9-b7ca-d2b982e53b11.jpg", searchText: buildSearchText("Никольский квартал Отрада", "Красногорск", "Опалиха", "весна 2026", "анонс") },
+  { id: 4,  developer: "Upside",            name: "Апсайд Мосфильмовская",               address: "улица Мосфильмовская",                   deadline: "май",         url: "https://xn--d1alfcjp.xn--p1ai/4.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7ed2157e-51d8-4cd0-817b-40ae29cbb681.jpg", searchText: buildSearchText("Апсайд Мосфильмовская", "Upside", "улица Мосфильмовская", "май", "анонс") },
+  { id: 5,  developer: "Мангазея",          name: "Мангазея на Речном",                  address: "Москва",                                 deadline: "осень 2026",  url: "https://xn--d1alfcjp.xn--p1ai/5.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b28b6b6f-2dbd-4393-95f1-88529e441bf1.jpg", searchText: buildSearchText("Мангазея на Речном", "Мангазея", "Москва", "Речной вокзал", "осень 2026", "анонс") },
+  { id: 6,  developer: "АСИ Групп",         name: "Каштановая роща 2 оч.",               address: "д. Измалково, Солнечная ул",              deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/6.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/7522e5a5-00cd-4285-9572-ff923a5b251d.jpg", searchText: buildSearchText("Каштановая роща", "АСИ Групп", "Измалково", "Солнечная", "2026", "анонс") },
+  { id: 7,  developer: "ГК СетьСтрой",     name: "Квартал Светлый 2 оч.",               address: "г. Балашиха, ул Твардовского",            deadline: "2026 год",    url: "https://xn--d1alfcjp.xn--p1ai/7.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/d5d571af-6a7c-405e-b22c-0c739ba77d1b.jpg", searchText: buildSearchText("Квартал Светлый", "ГК СетьСтрой", "Балашиха", "Твардовского", "2026", "анонс") },
+  { id: 8,  developer: "Vesper",            name: "Vesper на Шабаловке",                 address: "Донской, ул Шаболовка",                  deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/8.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/f92e8f1b-a945-47c3-9d46-aa1ce75fafb3.png", searchText: buildSearchText("Vesper на Шабаловке", "Vesper", "Донской", "Шаболовка", "анонс") },
+  { id: 9,  developer: "Sminex",            name: "Дом Палашевский 11",                  address: "Большой Палашевский переулок",            deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/9.html",  img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/56643ce7-a7be-4d71-b2a5-e031833b8901.jpg", searchText: buildSearchText("Дом Палашевский", "Sminex", "Большой Палашевский переулок", "анонс") },
+  { id: 10, developer: "STONE OFFICE",      name: "БЦ Мневники 4",                       address: "Хорошево-Мневники, ул Нижние Мневники",  deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/10.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/1dcd3797-4bb8-445a-bb4b-626aab2a2cbd.jpg", searchText: buildSearchText("БЦ Мневники", "STONE OFFICE", "Хорошево-Мневники", "Нижние Мневники", "бизнес-центр", "анонс") },
+  { id: 11, developer: "ГК Самолет",        name: "Химки Парк",                          address: "г. Химки, ул Рабочая",                   deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/11.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/b1395206-2a22-484f-9626-c1afe019ace9.jpg", searchText: buildSearchText("Химки Парк", "ГК Самолет", "Химки", "Рабочая", "анонс") },
+  { id: 12, developer: "Лесная Отрада",     name: "Лесная Отрада, 2 оч., корпус 2",      address: "пос. Светлые Горы, Пятницкое шоссе",    deadline: "скоро",       url: "https://xn--d1alfcjp.xn--p1ai/12.html", img: "https://cdn.poehali.dev/projects/ee5e4b95-344d-4573-85b8-da351295bda9/bucket/84741645-38d5-4d64-91d8-2d42516b863b.jpg", searchText: buildSearchText("Лесная Отрада", "Светлые Горы", "Пятницкое шоссе", "анонс") },
 ];
 
 // ─── Данные Старты продаж ─────────────────────────────────────────────────────
@@ -50,6 +81,7 @@ interface SaleStart {
   tags: string[];
   img: string;
   url?: string;
+  searchText: string;
 }
 
 const SALE_STARTS: SaleStart[] = [
@@ -62,6 +94,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "Цена под запрос" }, { type: "1-к.кв", price: "Цена под запрос" }, { type: "2Е-к.кв", price: "Цена под запрос" }],
     totalApts: 458, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/3bbca03a-1d6c-48ec-972c-2c622e394360.png",
+    searchText: buildSearchText("Одинбург", "AFI Development", "Одинцово", "Одинцовский", "Северная", "D1", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "1 кв 2028"),
   },
   {
     id: 2, name: "СберСити", isNew: false,
@@ -72,6 +105,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 24 802 692 ₽" }, { type: "1-к.кв", price: "от 29 842 650 ₽" }, { type: "2Е-к.кв", price: "от 25 582 100 ₽" }],
     totalApts: 161, views: 1, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/5e7dd13e-a840-4073-88dc-fbb32cab61c2.png",
+    searchText: buildSearchText("СберСити", "Сбер", "Кунцевская", "Кунцево", "Рублево-Архангельское", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "2 кв 2026", "4 кв 2028"),
   },
   {
     id: 3, name: "Пыжевский", isNew: true,
@@ -82,6 +116,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "2Е-к.кв", price: "от 238 943 151 ₽" }, { type: "3Е-к.кв", price: "от 426 475 566 ₽" }, { type: "4Е-к.кв", price: "от 458 957 772 ₽" }],
     totalApts: 24, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/9fdfe580-3c4f-4a3a-849b-f73586a4dd9a.png",
+    searchText: buildSearchText("Пыжевский", "Текта Групп", "Третьяковская", "Якиманка", "Пыжевский переулок", "2Е-к.кв", "3Е-к.кв", "4Е-к.кв", "премиум", "старт продаж", "апрель 2026", "2 кв 2029"),
   },
   {
     id: 4, name: "Большое Юрлово", isNew: true,
@@ -92,6 +127,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 4 542 581 ₽" }, { type: "1-к.кв", price: "от 5 278 122 ₽" }, { type: "2Е-к.кв", price: "от 5 460 239 ₽" }],
     totalApts: 417, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/250f3905-20a1-47cd-aa4e-f5a47561992c.png",
+    searchText: buildSearchText("Большое Юрлово", "ГК Самолет", "Самолет", "Пятницкое шоссе", "Химки", "Юрлово", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "1 кв 2028"),
   },
   {
     id: 5, name: "Мартемьяново Клаб", isNew: false,
@@ -102,6 +138,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "1-к.кв", price: "от 7 625 453 ₽" }, { type: "2Е-к.кв", price: "от 12 669 665 ₽" }, { type: "2-к.кв", price: "от 12 794 333 ₽" }],
     totalApts: 53, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/2e77adc5-8061-45cc-930e-b31d88a00664.png",
+    searchText: buildSearchText("Мартемьяново Клаб", "ГК ФСК", "ФСК", "Апрелевка", "Наро-Фоминский", "Мартемьяново", "1-к.кв", "2Е-к.кв", "2-к.кв", "старт продаж", "апрель 2026", "4 кв 2027"),
   },
   {
     id: 6, name: "МЫС", isNew: false,
@@ -112,6 +149,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 12 885 847 ₽" }, { type: "2Е-к.кв", price: "от 12 732 815 ₽" }, { type: "2-к.кв", price: "от 19 149 747 ₽" }],
     totalApts: 349, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/d3be9dcd-8e1b-46b6-8595-f67712a3e37c.png",
+    searchText: buildSearchText("МЫС", "MR Group", "МР Груп", "Лесной Городок", "D4", "Одинцовский", "Ликино", "студии", "2Е-к.кв", "2-к.кв", "старт продаж", "апрель 2026", "3 кв 2028"),
   },
   {
     id: 7, name: "Муза", isNew: false,
@@ -122,6 +160,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "1-к.кв", price: "от 42 487 320 ₽" }, { type: "2-к.кв", price: "от 70 906 220 ₽" }, { type: "3-к.кв", price: "от 71 467 500 ₽" }],
     totalApts: 20, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/6090d6e1-3f6a-49e3-93b9-7b1a6fb268c0.png",
+    searchText: buildSearchText("Муза", "Мангазея", "Аэропорт", "Красноармейская", "1-к.кв", "2-к.кв", "3-к.кв", "старт продаж", "апрель 2026", "2 кв 2029"),
   },
   {
     id: 8, name: "Резиденция Омега", isNew: false,
@@ -132,6 +171,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "2Е-к.кв", price: "от 134 531 569 ₽" }, { type: "3Е-к.кв", price: "от 165 803 459 ₽" }, { type: "4Е-к.кв", price: "от 208 598 153 ₽" }],
     totalApts: 5, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/0f672596-714b-43f7-9d42-d594727be277.png",
+    searchText: buildSearchText("Резиденция Омега", "Aurix Development", "Академическая", "Гагаринский", "Фотиевой", "2Е-к.кв", "3Е-к.кв", "4Е-к.кв", "элит", "старт продаж", "апрель 2026", "1 кв 2030"),
   },
   {
     id: 9, name: "Сердце Лыткарино", isNew: false,
@@ -142,6 +182,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 5 622 301 ₽" }, { type: "1-к.кв", price: "от 7 270 616 ₽" }, { type: "2Е-к.кв", price: "от 8 023 517 ₽" }],
     totalApts: 140, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/d4abd92f-d58d-4dc4-8f54-27cb64e83df3.png",
+    searchText: buildSearchText("Сердце Лыткарино", "ООО Генезис", "Генезис", "Томилино", "D3", "Лыткарино", "Спортивная", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "2 кв 2028"),
   },
   {
     id: 10, name: "Литературный Квартал", isNew: false,
@@ -152,6 +193,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 9 910 267 ₽" }, { type: "1-к.кв", price: "от 10 534 432 ₽" }, { type: "2Е-к.кв", price: "от 11 003 413 ₽" }],
     totalApts: 198, views: 68, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/b20eabde-e5be-4397-bb4b-8f2e394c5031.jpg",
+    searchText: buildSearchText("Литературный Квартал", "ГК Самолет", "Самолет", "Пыхтино", "Новая Москва", "Рассказовка", "Боровская", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "4 кв 2028"),
   },
   {
     id: 11, name: "ТАТУМ", isNew: false,
@@ -162,6 +204,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 18 303 624 ₽" }, { type: "1-к.кв", price: "от 21 390 345 ₽" }, { type: "2Е-к.кв", price: "от 21 459 645 ₽" }],
     totalApts: 45, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/02077f24-a23c-42f7-855b-315f1b6667e8.png",
+    searchText: buildSearchText("ТАТУМ", "FORMA", "Калужская", "Обручевский", "Обручева", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "1 кв 2029"),
   },
   {
     id: 12, name: "Гостиничный комплекс Варшавские в...", isNew: false,
@@ -172,6 +215,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 12 150 060 ₽" }, { type: "1-к.кв", price: "от 16 228 800 ₽" }, { type: "2-к.кв", price: "от 21 778 640 ₽" }],
     totalApts: 116, tags: ["Новостройки", "Апартаменты"],
     img: "https://cdn.poehali.dev/files/5cd0de12-0ff2-4d1e-8afe-3b490e178dab.png",
+    searchText: buildSearchText("Гостиничный комплекс Варшавские", "РГ-Девелопмент", "Аннино", "Южное Чертаново", "Варшавское шоссе", "студии", "1-к.кв", "2-к.кв", "апартаменты", "старт продаж", "апрель 2026", "2 кв 2026"),
   },
   {
     id: 13, name: "1-й Химкинский", isNew: false,
@@ -182,6 +226,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 4 845 380 ₽" }, { type: "1-к.кв", price: "от 7 019 694 ₽" }, { type: "2Е-к.кв", price: "от 7 781 220 ₽" }],
     totalApts: 499, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/dda84f56-873a-4b83-ae02-8ee1f5715ee0.png",
+    searchText: buildSearchText("1-й Химкинский", "ДСК-1", "ДСК", "Химки", "D3", "Ивакино", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "4 кв 2026", "4 кв 2028"),
   },
   {
     id: 14, name: "Прибрежный Парк", isNew: false,
@@ -192,6 +237,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 5 244 320 ₽" }, { type: "1-к.кв", price: "от 7 195 929 ₽" }, { type: "2Е-к.кв", price: "от 6 615 965 ₽" }],
     totalApts: 206, views: 52, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/08ef7a6a-a14f-4c96-ad0b-a122b373b4b0.png",
+    searchText: buildSearchText("Прибрежный Парк", "ГК Самолет", "Самолет", "Домодедовская", "Домодедово", "Новая", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "2 кв 2026", "4 кв 2028"),
   },
   {
     id: 15, name: "Ольховый квартал", isNew: false,
@@ -202,6 +248,7 @@ const SALE_STARTS: SaleStart[] = [
     prices: [{ type: "Студии", price: "от 6 294 543 ₽" }, { type: "1-к.кв", price: "от 10 954 153 ₽" }, { type: "2Е-к.кв", price: "от 12 029 144 ₽" }],
     totalApts: 123, views: 18, tags: ["Новостройки"],
     img: "https://cdn.poehali.dev/files/cafcd858-3c57-4a75-8c5e-3361f92fdec9.png",
+    searchText: buildSearchText("Ольховый квартал", "ГК Самолет", "Самолет", "Коммунарка", "Новая Москва", "Сосенское", "Николо-Хованская", "студии", "1-к.кв", "2Е-к.кв", "старт продаж", "апрель 2026", "2 кв 2026", "4 кв 2028"),
   },
 ];
 
@@ -211,6 +258,7 @@ function SaleStartCard({ item, onLead }: { item: SaleStart; onLead?: (src: strin
   const [hovered, setHovered] = useState(false);
   return (
     <div
+      id={`sale-card-${item.id}`}
       onClick={() => onLead && onLead(item.name)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -450,6 +498,7 @@ function LaunchCard({ item, setPage, onLead }: { item: Launch; setPage?: (p: str
 
   return (
     <div
+      id={`launch-card-${item.id}`}
       onClick={handleClick}
       style={{
         background: "#fff",
@@ -514,9 +563,97 @@ function useCountUp(target: number, duration = 1800) {
   return count;
 }
 
-function Hero({ onSearch }: { onSearch: () => void }) {
+function searchObjects(query: string): SearchResult[] {
+  const q = query.trim().toLowerCase();
+  if (!q || q.length < 2) return [];
+  const results: SearchResult[] = [];
+  for (const item of LAUNCHES) {
+    if (item.searchText.includes(q)) {
+      results.push({
+        kind: "launch",
+        id: item.id,
+        name: item.name,
+        sub: [item.developer, item.address, item.deadline].filter(Boolean).join(" · "),
+        img: item.img,
+        internalPage: item.internalPage,
+        highlight: item.name,
+      });
+    }
+  }
+  for (const item of SALE_STARTS) {
+    if (item.searchText.includes(q)) {
+      results.push({
+        kind: "sale",
+        id: item.id,
+        name: item.name,
+        sub: [item.developer, item.location, item.metro].filter(Boolean).join(" · "),
+        img: item.img,
+        highlight: item.name,
+      });
+    }
+  }
+  return results.slice(0, 8);
+}
+
+function Hero({ onSearch, setPage }: { onSearch: () => void; setPage: (p: string) => void }) {
   const [search, setSearch] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
   const count = useCountUp(67_115);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (search.trim().length >= 2) {
+      const r = searchObjects(search);
+      setResults(r);
+      setOpen(r.length > 0);
+    } else {
+      setResults([]);
+      setOpen(false);
+    }
+  }, [search]);
+
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+      setOpen(false);
+      setFocused(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [handleClickOutside]);
+
+  const handleSelect = (r: SearchResult) => {
+    setOpen(false);
+    setSearch(r.name);
+    if (r.kind === "launch") {
+      if (r.internalPage) {
+        setPage(r.internalPage);
+        window.scrollTo({ top: 0 });
+      } else {
+        setPage("launches");
+        setTimeout(() => {
+          const el = document.getElementById(`launch-card-${r.id}`);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 150);
+      }
+    } else {
+      setPage("sale-starts");
+      setTimeout(() => {
+        const el = document.getElementById(`sale-card-${r.id}`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 150);
+    }
+  };
+
+  const handleEnter = () => {
+    if (results.length === 1) { handleSelect(results[0]); return; }
+    if (results.length > 1) { setOpen(true); return; }
+    onSearch();
+  };
 
   return (
     <div style={{ background: "#ECF0F7", padding: "3rem clamp(1rem,4vw,4rem) 3rem", textAlign: "center" }}>
@@ -529,63 +666,125 @@ function Hero({ onSearch }: { onSearch: () => void }) {
       </h1>
 
       {/* Поисковая строка */}
-      <div
-        className="hero-searchbar"
-        style={{
-          background: "#fff",
-          borderRadius: 12,
-          border: "1px solid #D1D8E4",
-          maxWidth: 860, margin: "0 auto",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          overflow: "hidden",
-        }}
-      >
-        {/* Search input */}
+      <div ref={wrapRef} style={{ position: "relative", maxWidth: 860, margin: "0 auto" }}>
         <div
-          className="hero-searchbar-input"
-          style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "0 1rem" }}
+          className="hero-searchbar"
+          style={{
+            background: "#fff",
+            borderRadius: open ? "12px 12px 0 0" : 12,
+            border: `1px solid ${focused ? "#2563EB" : "#D1D8E4"}`,
+            boxShadow: focused ? "0 0 0 3px rgba(37,99,235,0.1)" : "0 2px 8px rgba(0,0,0,0.05)",
+            overflow: "hidden",
+            transition: "border-color 0.15s, box-shadow 0.15s",
+          }}
         >
-          <Icon name="Search" size={15} style={{ color: "#9CA3AF", flexShrink: 0 }} />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && onSearch()}
-            placeholder="Метро, район, локация, ЖК, улица, застройщик, банк"
-            style={{
-              border: "none", outline: "none",
-              fontSize: "0.875rem", color: "#374151",
-              width: "100%", fontFamily: "Inter, sans-serif",
-              padding: "0.9rem 0", background: "transparent",
-            }}
-          />
-        </div>
+          {/* Search input */}
+          <div
+            className="hero-searchbar-input"
+            style={{ flex: 1, display: "flex", alignItems: "center", gap: 8, padding: "0 1rem" }}
+          >
+            <Icon name="Search" size={15} style={{ color: search ? "#2563EB" : "#9CA3AF", flexShrink: 0, transition: "color 0.15s" }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              onFocus={() => { setFocused(true); if (results.length > 0) setOpen(true); }}
+              onKeyDown={e => {
+                if (e.key === "Enter") handleEnter();
+                if (e.key === "Escape") { setOpen(false); setSearch(""); }
+              }}
+              placeholder="Метро, район, локация, ЖК, улица, застройщик"
+              style={{
+                border: "none", outline: "none",
+                fontSize: "0.875rem", color: "#374151",
+                width: "100%", fontFamily: "Inter, sans-serif",
+                padding: "0.9rem 0", background: "transparent",
+              }}
+            />
+            {search && (
+              <button onClick={() => { setSearch(""); setResults([]); setOpen(false); }} style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "#9CA3AF", lineHeight: 0, flexShrink: 0 }}>
+                <Icon name="X" size={14} />
+              </button>
+            )}
+          </div>
 
-        {/* Фильтры — скрываются на мобильном */}
-        <div className="hero-filters">
-          {["Тип квартиры", "Цена от-до, ₽", "Срок сдачи"].map((f) => (
-            <button key={f} style={{
+          {/* Фильтры — скрываются на мобильном */}
+          <div className="hero-filters">
+            {["Тип квартиры", "Цена от-до, ₽", "Срок сдачи"].map((f) => (
+              <button key={f} style={{
+                background: "none", border: "none",
+                borderRight: "1px solid #E5E9F0",
+                padding: "0 1rem", height: 52,
+                fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
+                color: "#374151", fontWeight: 500,
+                cursor: "pointer", whiteSpace: "nowrap",
+              }}>
+                {f}
+              </button>
+            ))}
+            <button style={{
               background: "none", border: "none",
-              borderRight: "1px solid #E5E9F0",
               padding: "0 1rem", height: 52,
               fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
               color: "#374151", fontWeight: 500,
               cursor: "pointer", whiteSpace: "nowrap",
+              display: "flex", alignItems: "center", gap: 6,
             }}>
-              {f}
+              <Icon name="SlidersHorizontal" size={14} style={{ color: "#6B7280" }} />
+              Все фильтры
             </button>
-          ))}
-          <button style={{
-            background: "none", border: "none",
-            padding: "0 1rem", height: 52,
-            fontFamily: "Inter, sans-serif", fontSize: "0.8rem",
-            color: "#374151", fontWeight: 500,
-            cursor: "pointer", whiteSpace: "nowrap",
-            display: "flex", alignItems: "center", gap: 6,
-          }}>
-            <Icon name="SlidersHorizontal" size={14} style={{ color: "#6B7280" }} />
-            Все фильтры
-          </button>
+          </div>
         </div>
+
+        {/* Дропдаун результатов */}
+        {open && results.length > 0 && (
+          <div style={{
+            position: "absolute", top: "100%", left: 0, right: 0, zIndex: 200,
+            background: "#fff", border: "1px solid #2563EB", borderTop: "none",
+            borderRadius: "0 0 12px 12px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+            overflow: "hidden",
+          }}>
+            {results.map((r, i) => (
+              <button
+                key={`${r.kind}-${r.id}`}
+                onClick={() => handleSelect(r)}
+                style={{
+                  display: "flex", alignItems: "center", gap: 12,
+                  width: "100%", background: "none", border: "none",
+                  borderBottom: i < results.length - 1 ? "1px solid #F3F4F6" : "none",
+                  padding: "10px 14px", cursor: "pointer", textAlign: "left",
+                  transition: "background 0.1s",
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = "#F0F4FF"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = "none"; }}
+              >
+                {r.img ? (
+                  <img src={r.img} alt="" style={{ width: 36, height: 36, borderRadius: 6, objectFit: "cover", flexShrink: 0 }} />
+                ) : (
+                  <div style={{ width: 36, height: 36, borderRadius: 6, background: "#E5E9F0", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon name="Building2" size={16} style={{ color: "#8B97A8" }} />
+                  </div>
+                )}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: "Inter, sans-serif", fontWeight: 600, fontSize: "0.85rem", color: "#111827", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <HighlightText text={r.name} query={search} />
+                  </div>
+                  <div style={{ fontFamily: "Inter, sans-serif", fontSize: "0.75rem", color: "#9CA3AF", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", marginTop: 2 }}>
+                    <HighlightText text={r.sub} query={search} />
+                  </div>
+                </div>
+                <span style={{
+                  fontSize: "0.68rem", fontFamily: "Inter, sans-serif", fontWeight: 600,
+                  color: r.kind === "launch" ? "#7C3AED" : "#0369A1",
+                  background: r.kind === "launch" ? "#F3F0FF" : "#E0F2FE",
+                  padding: "2px 7px", borderRadius: 100, flexShrink: 0,
+                }}>
+                  {r.kind === "launch" ? "Анонс" : "Старт"}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Кнопки действий */}
@@ -842,7 +1041,7 @@ function HomePage({ setPage, onLead }: { setPage: (p: string) => void; onLead: (
   const go = (p: string) => { setPage(p); window.scrollTo({ top: 0 }); };
   return (
     <div>
-      <Hero onSearch={() => go("catalog")} />
+      <Hero onSearch={() => go("catalog")} setPage={setPage} />
 
       <div style={{ borderTop: "1px solid #E8EBF0" }}>
         <LaunchesSection setPage={setPage} showAll={false} onLead={onLead} />
